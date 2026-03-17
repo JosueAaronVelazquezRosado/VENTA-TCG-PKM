@@ -21,15 +21,33 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             margin: 0;
             padding: 15px;
+            padding-bottom: 90px;
         }
 
         nav {
             padding: 20px 0;
             max-width: 1000px;
             margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        nav h1 { font-size: 1.5rem; font-weight: 800; }
+        nav h1 { font-size: 1.5rem; font-weight: 800; margin: 0; }
+
+        /* ESTILO DEL FILTRO */
+        .filter-container {
+            background: var(--surface);
+            border: 1px solid #2d3142;
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
 
         .card-grid {
             display: grid;
@@ -53,7 +71,6 @@
             position: relative;
         }
 
-        /* Estilo para carta vendida en el grid */
         .collectr-card.sold {
             opacity: 0.6;
             filter: grayscale(0.8);
@@ -98,7 +115,24 @@
         .card-price { color: var(--price-green); font-weight: 700; font-size: 0.9rem; }
         .card-stock-badge { font-size: 0.65rem; color: var(--text-dim); background: #333; padding: 2px 6px; border-radius: 4px; }
 
-        /* MODAL */
+        #cart-float {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            background: var(--accent);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+            cursor: pointer;
+            z-index: 100;
+            display: none;
+            border: none;
+            animation: bounce 0.3s ease-out;
+        }
+
+        @keyframes bounce { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
         .modal {
             display: none;
             position: fixed;
@@ -128,39 +162,48 @@
         .modal-info h2 { margin: 0; font-size: 1.2rem; }
         .modal-price-big { font-size: 1.8rem; color: var(--price-green); font-weight: 800; margin: 10px 0; }
         
-        .btn-wa {
-            background: var(--accent);
-            color: white;
-            display: block;
-            text-align: center;
-            padding: 15px;
-            border-radius: 12px;
+        .btn-action {
+            display: block; width: 100%; padding: 16px;
+            border-radius: 14px; font-weight: 700;
+            text-align: center; margin-top: 12px;
+            border: none; cursor: pointer; font-size: 1rem;
             text-decoration: none;
-            font-weight: 700;
-            margin-top: 20px;
         }
 
-        /* Botón desactivado */
-        .btn-sold {
-            background: #333;
-            color: #666;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        .btn-add { background: var(--accent); color: white; }
+        .btn-whatsapp { background: #25d366; color: white; }
+        .btn-sold { background: #333; color: #666; cursor: not-allowed; pointer-events: none; }
 
         .close-area { text-align: center; padding-bottom: 15px; color: var(--text-dim); cursor: pointer; }
-        .my-photos img { width: 120px; height: 120px; border-radius: 10px; object-fit: cover; margin-right: 10px; border: 2px solid #2d3142; }
+        
+        .cart-item {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #2d3142; padding: 12px 0;
+        }
+
+        .remove-item { color: var(--sold-red); background: none; border: none; font-size: 1.2rem; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <nav>
     <h1>POKEMON TCG SALE</h1>
+    <select class="filter-container" id="sortFilter" onchange="handleSort()">
+        <option value="default">Ordenar por: Recientes</option>
+        <option value="price-asc">Precio: Menor a Mayor</option>
+        <option value="price-desc">Precio: Mayor a Menor</option>
+        <option value="available">Solo Disponibles</option>
+        <option value="sold">Solo Vendidos</option>
+    </select>
 </nav>
 
 <div class="card-grid" id="mainGrid"></div>
 
-<div class="modal" id="cardModal" onclick="closeModal(event)">
+<button id="cart-float" onclick="openCartView()">
+    🛒 Ver pedido (<span id="cart-count">0</span>)
+</button>
+
+<div class="modal" id="cardModal" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="close-area" onclick="closeModal()">✕ Cerrar</div>
         <div id="modalBody"></div>
@@ -168,236 +211,61 @@
 </div>
 
 <script>
-    // ESTA ES TU BASE DE DATOS - IGUAL QUE EN COLLECTR
+    const whatsappNumber = "9987683264";
+    let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
+
+    // BASE DE DATOS
     const cards = [
-        {
-            id: 1,
-            name: "Rotom ex #029/094",
-            set: "Phantasmal Flames",
-            price: "$25 MXN",
-            stock: 5, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata", // Imagen de Collectr/API
-            myImages: ["frente_regi.jpg", "vuelta_regi.jpg"], // Tus fotos
-            wa: "9987683264"
-        },
-        {
-            id: 2,
-            name: "Meloetta ex #044/086",
-            set: "Black Bolt",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_642496%20.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata", // Imagen de Collectr/API
-            myImages: ["frente_regi.jpg", "vuelta_regi.jpg"], // Tus fotos
-            wa: "9987683264"
-        },
-        {
-            id: 3,
-            name: "Whimsicott ex #005/086",
-            set: "White Flare",
-            price: "$30 MXN",
-            stock: 3, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_642120.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 4,
-            name: "Electivire ex #069/182",
-            set: "Destined Rivals",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_632882.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 5,
-            name: "Cetitan ex #065/182",
-            set: "Destined Rivals",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_632878.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 6,
-            name: "Empoleon ex #070/094",
-            set: "Phantasmal Flames",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_662155.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 7,
-            name: "Amoonguss ex #011/159",
-            set: "Journey Together",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_623438.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 8,
-            name: "Registeel ex #145/217",
-            set: "Ascended Heroes",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_675957.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 9,
-            name: "Keldeo ex #030/086",
-            set: "White Flare",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_642142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 10,
-            name: "Mismagius ex #036/094",
-            set: "Phantasmal Flames",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 11,
-            name: "Zangoose ex #167/217",
-            set: "Ascended Heroes",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_675979.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 12,
-            name: "Mandibuzz ex #139/217",
-            set: "Ascended Heroes",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_675951.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 13,
-            name: "Flamigo ex #160/191",
-            set: "Surging Sparks",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_589945.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 14,
-            name: "Iron Hands ex #031/131",
-            set: "Prismatics Evolutions",
-            price: "$30 MXN",
-            stock: 2, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_610386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 15,
-            name: "Garganacl ex #089/142",
-            set: "Stellar Crown",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_567315.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 16,
-            name: "Golem ex #076/165",
-            set: "SV:151",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_516574.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 17,
-            name: "Hop's Pincurchin ex #068/217",
-            set: "Ascended Heroes",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_675880.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 18,
-            name: "Paldean Clodsire ex #094/159",
-            set: "Journey Together",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_623521.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 19,
-            name: "Rabsca ex #025/182",
-            set: "Destined Rivals",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        },
-        {
-            id: 20,
-            name: "Kilowattrel ex #068/191",
-            set: "Surging Sparks",
-            price: "$30 MXN",
-            stock: 1, 
-            sold: false, // <--- CAMBIAR A true SI SE VENDE
-            img: "https://public.getcollectr.com/public-assets/products/product_589977.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata",
-            myImages: ["foto1.jpg"],
-            wa: "9987683264"
-        }
-        
+        { id: 1, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 25, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 2, name: "Meloetta ex #044/086", set: "Black Bolt", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642496%20.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 3, name: "Whimsicott ex #005/086", set: "White Flare", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642120.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 4, name: "Electivire ex #069/182", set: "Destined Rivals", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632882.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 5, name: "Cetitan ex #065/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632878.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 6, name: "Empoleon ex #070/094", set: "Phantasmal Flames", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662155.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 7, name: "Amoonguss ex #011/159", set: "Journey Together", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623438.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 8, name: "Registeel ex #145/217", set: "Ascended Heroes", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675957.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 9, name: "Keldeo ex #030/086", set: "White Flare", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 10, name: "Mismagius ex #036/094", set: "Phantasmal Flames", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 11, name: "Zangoose ex #167/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675979.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 12, name: "Mandibuzz ex #139/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675951.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 13, name: "Flamigo ex #160/191", set: "Surging Sparks", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589945.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 14, name: "Iron Hands ex #031/131", set: "Prismatic Evolution", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 15, name: "Garganacl ex #089/142", set: "Stellar Crown", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_567315.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 16, name: "Golem ex #076/165", set: "SV:151", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516574.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 17, name: "Hop's Pincurchin ex #068/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675880.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 18, name: "Paldean Clodsire ex #094/159", set: "Journey Together", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623521.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 19, name: "Rabsca ex #025/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 20, name: "Kilowattrel ex #068/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589977.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 21, name: "Banette ex #088/198", set: "Scarlet & Violet", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_487954.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 22, name: "Noivern ex #091/131", set: "Prismatic Evolution", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610446.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 23, name: "Regirock ex #107/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675919.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 24, name: "Iono's Bellibolt ex #053/159", set: "Journey Together", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 25, name: "Hydrapple ex #014/142", set: "Stellar Crown", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_567240.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 26, name: "Kyurem ex #028/086", set: "Black Bolt", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 27, name: "Excadrill ex #046/086", set: "Black Bolt", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642498.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 28, name: "Togedemaru ex #249/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675961.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 29, name: "Riolu (Pokeball) #050/131", set: "Prismatic Evolution", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610572.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 30, name: "Grafaiai ex #100", set: "Promo Scarlet & Violet", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_546448.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 31, name: "Scovillain ex #037/191", set: "Surging Sparks", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590040.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 32, name: "Bouffalant ex #077/086", set: "White Flare", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642190.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 33, name: "Palossand ex #091/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590018.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 34, name: "Team Rocket's Nidoking ex #119/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632927.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 35, name: "Serperior ex #003/086", set: "Black Bolt", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642452.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 36, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632879.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 37, name: "Arboliva ex #023/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_630807.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 38, name: "Alolan Exeggutor ex #133/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589858.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 39, name: "Mmoswine ex #079/159", set: "Journey Together", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623506.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 40, name: "Radiant Charjabug ex #051/159", set: "Crown Zenith", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_477055.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 41, name: "Genesect ex #067/086", set: "Black Bolt", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642518.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 42, name: "Noivern ex #069/091", set: "Paldean Fates", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_534431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 43, name: "Iron Boulder(ESP) ex #099/162", set: "Temporal Forces", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_542843.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+
     ];
 
-    const grid = document.getElementById('mainGrid');
-
-    function renderGrid() {
+    function renderGrid(cardsToRender) {
+        const grid = document.getElementById('mainGrid');
         grid.innerHTML = "";
-        cards.forEach(c => {
+        cardsToRender.forEach(c => {
             const div = document.createElement('div');
             div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
             div.innerHTML = `
@@ -407,17 +275,36 @@
                     <div class="card-set">${c.set}</div>
                     <div class="card-name">${c.name}</div>
                     <div class="card-footer">
-                        <div class="card-price">${c.sold ? '---' : c.price}</div>
+                        <div class="card-price">${c.sold ? '---' : '$' + c.price + ' MXN'}</div>
                         <div class="card-stock-badge">x${c.stock}</div>
                     </div>
                 </div>
             `;
-            div.onclick = () => openCard(c);
+            div.onclick = () => openDetail(c);
             grid.appendChild(div);
         });
+        updateCartUI();
     }
 
-    function openCard(c) {
+    // LÓGICA DE ORDENAMIENTO Y FILTRO
+    function handleSort() {
+        const filterValue = document.getElementById('sortFilter').value;
+        let sortedCards = [...cards];
+
+        if (filterValue === "price-asc") {
+            sortedCards.sort((a, b) => a.price - b.price);
+        } else if (filterValue === "price-desc") {
+            sortedCards.sort((a, b) => b.price - a.price);
+        } else if (filterValue === "available") {
+            sortedCards = sortedCards.filter(c => !c.sold);
+        } else if (filterValue === "sold") {
+            sortedCards = sortedCards.filter(c => c.sold);
+        }
+
+        renderGrid(sortedCards);
+    }
+
+    function openDetail(c) {
         const body = document.getElementById('modalBody');
         body.innerHTML = `
             <div class="modal-header">
@@ -425,24 +312,84 @@
                 <div class="modal-info">
                     <div class="card-set">${c.set}</div>
                     <h2>${c.name}</h2>
-                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : c.price}</div>
+                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : '$' + c.price + ' MXN'}</div>
                     <div style="font-size: 0.85rem; color: var(--text-dim)">Disponibles: ${c.stock}</div>
                 </div>
             </div>
-            
             ${c.sold 
-                ? '<div class="btn-wa btn-sold">ESTE ARTÍCULO YA SE VENDIÓ</div>' 
-                : `<a href="https://wa.me/${c.wa}?text=Hola! Me interesa la carta ${c.name}" class="btn-wa">Comprar vía WhatsApp</a>`
+                ? '<div class="btn-action btn-sold">ESTE ARTÍCULO YA SE VENDIÓ</div>' 
+                : `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al pedido</button>`
             }
         `;
         document.getElementById('cardModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('cardModal').style.display = 'none';
+    function addToCart(id) {
+        const card = cards.find(c => c.id === id);
+        cart.push(card);
+        localStorage.setItem('pkmCart', JSON.stringify(cart));
+        updateCartUI();
+        closeModal();
     }
 
-    renderGrid();
+    function updateCartUI() {
+        const float = document.getElementById('cart-float');
+        const count = document.getElementById('cart-count');
+        float.style.display = cart.length > 0 ? 'block' : 'none';
+        count.innerText = cart.length;
+    }
+
+    function openCartView() {
+        const body = document.getElementById('modalBody');
+        let total = 0;
+        let itemsHTML = cart.map((item, index) => {
+            total += item.price;
+            return `
+                <div class="cart-item">
+                    <div>
+                        <div style="font-weight:600; font-size:0.9rem;">${item.name}</div>
+                        <div style="color:var(--price-green); font-size:0.85rem;">$${item.price} MXN</div>
+                    </div>
+                    <button class="remove-item" onclick="removeFromCart(${index})">✕</button>
+                </div>`;
+        }).join('');
+
+        body.innerHTML = `
+            <h2 style="margin-top:0;">Tu Pedido</h2>
+            <div style="max-height:250px; overflow-y:auto; margin-bottom:15px;">
+                ${cart.length > 0 ? itemsHTML : '<p style="text-align:center; color:var(--text-dim);">El carrito está vacío</p>'}
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:1.3rem; font-weight:800; padding:15px 0; border-top:1px solid #333;">
+                <span>Total:</span>
+                <span style="color:var(--price-green);">$${total} MXN</span>
+            </div>
+            ${cart.length > 0 ? `<button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">Confirmar pedido por WhatsApp</button>` : ''}
+        `;
+        document.getElementById('cardModal').style.display = 'flex';
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        localStorage.setItem('pkmCart', JSON.stringify(cart));
+        updateCartUI();
+        if(cart.length === 0) closeModal();
+        else openCartView();
+    }
+
+    function sendWhatsApp() {
+        let text = "¡Hola! Me interesan estas cartas de tu inventario:\n\n";
+        let total = 0;
+        cart.forEach((item, i) => {
+            text += `${i+1}. ${item.name} ($${item.price} MXN)\n`;
+            total += item.price;
+        });
+        text += `\n*TOTAL: $${total} MXN*`;
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank');
+    }
+
+    function closeModal() { document.getElementById('cardModal').style.display = 'none'; }
+
+    renderGrid(cards);
 </script>
 
 </body>
