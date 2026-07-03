@@ -110,18 +110,8 @@
             margin: 0 auto 20px auto;
             display: flex;
             gap: 8px;
-            overflow-x: auto;
+            flex-wrap: wrap;
             padding-bottom: 8px;
-            scrollbar-width: thin;
-        }
-
-        .set-buttons-container::-webkit-scrollbar {
-            height: 4px;
-        }
-
-        .set-buttons-container::-webkit-scrollbar-thumb {
-            background: #2d3142;
-            border-radius: 4px;
         }
 
         .set-btn {
@@ -453,7 +443,7 @@
 <script>
     const whatsappNumber = "9987683264";
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
-    let selectedSet = "all"; // Rastreador de expansión seleccionada
+    let selectedSet = "all";
 
     // BASE DE DATOS (CORREGIDA)
     const cards = [
@@ -535,7 +525,7 @@
   { id: 76, name: "Yveltal ex #053/088", set: "Perfect Order", price: 35, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 77, name: "Cofagrigus ex #076/182", set: "Paradox Rift", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_523736.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 78, name: "Jynx ex #124/165", set: "SV: 151", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516687.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 79, name: "Origin Forme Palkia V #039/189", set: "Astral Radiance", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_272239.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 79, name: "Origin Forme Palkia V #039/189", set: "Astral Radiance", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/withdrawn/product_272239.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 80, name: "Ninetales ex #038/165", set: "SV: 151", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516072.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 81, name: "Regirock ex (JP) #055/098", set: "Glory of Team Rocket", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10027941.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 82, name: "Wigglytuff ex #040/165", set: "SV: 151", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516145.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -607,16 +597,13 @@
         updateCartUI();
     }
 
-    // Nueva función para manejar los clics de la botonera de expansiones
     function filterBySet(setName, buttonElement) {
         selectedSet = setName;
         
-        // Quitar clase activa de todos los botones y ponérsela al seleccionado
         const buttons = document.querySelectorAll('.set-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
         buttonElement.classList.add('active');
         
-        // Volver a ordenar y filtrar el catálogo completo
         handleSort();
     }
 
@@ -626,17 +613,14 @@
         
         let filteredCards = [...cards];
 
-        // 1. Filtrar por Expansión Activa (Botonera)
         if (selectedSet !== "all") {
             filteredCards = filteredCards.filter(c => c.set === selectedSet);
         }
 
-        // 2. Filtrar por Buscador de texto
         if (searchQuery !== "") {
             filteredCards = filteredCards.filter(c => c.name.toLowerCase().includes(searchQuery));
         }
 
-        // 3. Ejecutar ordenamientos o filtros de estado (Disponibles / Vendidos)
         if (filterValue === "price-asc") {
             filteredCards.sort((a, b) => a.price - b.price);
         } else if (filterValue === "price-desc") {
