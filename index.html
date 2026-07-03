@@ -84,6 +84,16 @@
             border-color: var(--accent);
         }
 
+        /* Estilo personalizado para hacer la X automática visible y estética en fondos oscuros */
+        .search-input::-webkit-search-cancel-button {
+            -webkit-appearance: none;
+            height: 14px;
+            width: 14px;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
+            background-size: contain;
+            cursor: pointer;
+        }
+
         .filter-container {
             background: var(--surface);
             border: 1px solid #2d3142;
@@ -142,7 +152,6 @@
             left: 10px;
             background: var(--warning-yellow);
             color: #000000;
-             Minnie-size: 0.65rem;
             font-size: 0.65rem;
             font-weight: 800;
             padding: 3px 6px;
@@ -260,7 +269,7 @@
     </div>
     <div class="nav-controls">
         <div class="search-container">
-            <input type="text" class="search-input" id="searchInput" placeholder="Buscar Pokémon..." oninput="handleSort()">
+            <input type="search" class="search-input" id="searchInput" placeholder="Buscar Pokémon..." oninput="handleSort()" onsearch="handleSort()">
         </div>
         <select class="filter-container" id="sortFilter" onchange="handleSort()">
             <option value="default">Ordenar por: Recientes</option>
@@ -327,7 +336,7 @@
   { id: 34, name: "Eiscue ex (Holiday Calendar) #042/197", set: "Miscellaneous Cards & Products", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_579994.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 35, name: "Grafaiai ex #100", set: "Scarlet & Violet Promo", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_546448.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 36, name: "Milotic ex #042/191", set: "Surging Sparks", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590004.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 37, name: "Oranguru V #133/189", set: "Astral Radiance", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_272375.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 37, name: "Oranguru V #133/189", set: "Astral Radiance", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/withdrawn/product_272375.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 38, name: "Team Rocket's Persian ex #150/182", set: "Destined Rivals", price: 25, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632955.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 39, name: "Genesect ex #067/086", set: "Black Bolt", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642518.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 40, name: "Whimsicott ex #005/086", set: "White Flare", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642120.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
