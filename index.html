@@ -37,7 +37,6 @@
 
         nav h1 { font-size: 1.5rem; font-weight: 800; margin: 0; }
 
-        /* ESTILO DEL FILTRO */
         .filter-container {
             background: var(--surface);
             border: 1px solid #2d3142;
@@ -97,6 +96,9 @@
             aspect-ratio: 3/4;
             display: flex;
             align-items: center;
+            justify-content: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
         }
 
         .img-container img { width: 100%; height: auto; }
@@ -128,10 +130,7 @@
             z-index: 100;
             display: none;
             border: none;
-            animation: bounce 0.3s ease-out;
         }
-
-        @keyframes bounce { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
         .modal {
             display: none;
@@ -141,23 +140,20 @@
             backdrop-filter: blur(5px);
             z-index: 9999;
             align-items: flex-end;
+            justify-content: center;
         }
 
         .modal-content {
             background: var(--surface);
             width: 100%;
             max-width: 600px;
-            margin: 0 auto;
             border-radius: 20px 20px 0 0;
             padding: 25px;
             box-sizing: border-box;
-            animation: slideUp 0.3s ease-out;
         }
 
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
         .modal-header { display: flex; gap: 20px; border-bottom: 1px solid #2d3142; padding-bottom: 20px; }
-        .modal-img { width: 130px; border-radius: 8px; }
+        .modal-img { width: 130px; border-radius: 8px; object-fit: contain; }
         
         .modal-info h2 { margin: 0; font-size: 1.2rem; }
         .modal-price-big { font-size: 1.8rem; color: var(--price-green); font-weight: 800; margin: 10px 0; }
@@ -168,6 +164,7 @@
             text-align: center; margin-top: 12px;
             border: none; cursor: pointer; font-size: 1rem;
             text-decoration: none;
+            box-sizing: border-box;
         }
 
         .btn-add { background: var(--accent); color: white; }
@@ -214,56 +211,55 @@
     const whatsappNumber = "9987683264";
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
 
-    // BASE DE DATOS
+    // BASE DE DATOS (CORREGIDA)
     const cards = [
-  { id: 1, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 2, name: "Electivire ex #069/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632882.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 3, name: "Cetitan ex #065/182", set: "Destined Rivals", price: 10, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632878.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 4, name: "Mismagius ex #036/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 5, name: "Zangoose ex #167/217", set: "Ascended Heroes", price: 10, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675979.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 6, name: "Mandibuzz ex #139/217", set: "Ascended Heroes", price: 10, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675951.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 7, name: "Flamigo ex #160/191", set: "Surging Sparks", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_589945.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 8, name: "Hop's Pincurchin ex #068/217", set: "Ascended Heroes", price: 10, stock: 7, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675880.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 9, name: "Excadrill ex #046/086", set: "Black Bolt", price: 10, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642498.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 10, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img:"" 
-  { id: 11, name: "Slaking ex #147/191", set: "Surging Sparks", price: 10, stock: 1, sold: false, img:"" 
-  { id: 12, name: "Toedscruel ex #005/091", set: "Paldean Fates", price: 10, stock: 1, sold: false, img:"" 
-  { id: 13, name: "Sandy Shocks ex #056/131", set: "Prismatic Evolution", price: 10, stock: 5, sold: false, img:"" 
-  { id: 14, name: "Amoonguss ex #011/159", set: "Journey Together", price: 15, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_623438.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 11, name: "Iron Hands ex #031/131", set: "Prismatic Evolution", price: 15, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 12, name: "Paldean Clodsire ex #094/159", set: "Journey Together", price: 15, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623521.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 13, name: "Kilowattrel ex #068/191", set: "Surging Sparks", price: 15, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589977.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 14, name: "Meloetta ex #044/086", set: "Black Bolt", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642496%20.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 15, name: "Empoleon ex #070/094", set: "Phantasmal Flames", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662155.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 16, name: "Registeel ex #145/217", set: "Ascended Heroes", price: 20, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675957.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 17, name: "Keldeo ex #030/086", set: "White Flare", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 18, name: "Garganacl ex #089/142", set: "Stellar Crown", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567315.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 19, name: "Rabsca ex #025/182", set: "Destined Rivals", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 20, name: "Noivern ex #091/131", set: "Prismatic Evolution", price: 20, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610446.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 21, name: "Togedemaru ex #249/217", set: "Ascended Heroes", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_675961.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 22, name: "Regirock ex #107/217", set: "Ascended Heroes", price: 25, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675919.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 23, name: "Grafaiai ex #100", set: "Promo Scarlet & Violet", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_546448.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 24, name: "Whimsicott ex #005/086", set: "White Flare", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642120.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 25, name: "Golem ex #076/165", set: "SV:151", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_516574.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 26, name: "Banette ex #088/198", set: "Scarlet & Violet", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_487954.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 27, name: "Iono's Bellibolt ex #053/159", set: "Journey Together", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_623480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 28, name: "Hydrapple ex #014/142", set: "Stellar Crown", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567240.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 29, name: "Kyurem ex #028/086", set: "Black Bolt", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 30, name: "Riolu (Pokeball) #050/131", set: "Prismatic Evolution", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_610572.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 31, name: "Scovillain ex #037/191", set: "Surging Sparks", price: 10, stock: , sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590040.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 32, name: "Bouffalant ex #077/086", set: "White Flare", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642190.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 33, name: "Palossand ex #091/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590018.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 34, name: "Team Rocket's Nidoking ex #119/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632927.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 35, name: "Serperior ex #003/086", set: "Black Bolt", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642452.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 37, name: "Arboliva ex #023/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_630807.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 38, name: "Alolan Exeggutor ex #133/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589858.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 39, name: "Mamoswine ex #079/159", set: "Journey Together", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623506.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 40, name: "Radiant Charjabug ex #051/159", set: "Crown Zenith", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_477055.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 41, name: "Genesect ex #067/086", set: "Black Bolt", price: 20, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642518.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 42, name: "Noivern ex #069/091", set: "Paldean Fates", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_534431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 43, name: "Iron Boulder(ESP) ex #099/162", set: "Temporal Forces", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_542843.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
- ];
-
+        { id: 1, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 2, name: "Electivire ex #069/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632882.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 3, name: "Cetitan ex #065/182", set: "Destined Rivals", price: 10, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632878.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 4, name: "Mismagius ex #036/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 5, name: "Zangoose ex #167/217", set: "Ascended Heroes", price: 10, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675979.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 6, name: "Mandibuzz ex #139/217", set: "Ascended Heroes", price: 10, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675951.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 7, name: "Flamigo ex #160/191", set: "Surging Sparks", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_589945.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 8, name: "Hop's Pincurchin ex #068/217", set: "Ascended Heroes", price: 10, stock: 7, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675880.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 9, name: "Excadrill ex #046/086", set: "Black Bolt", price: 10, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642498.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 10, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img:"" },
+        { id: 11, name: "Slaking ex #147/191", set: "Surging Sparks", price: 10, stock: 1, sold: false, img:"" }, 
+        { id: 12, name: "Toedscruel ex #005/091", set: "Paldean Fates", price: 10, stock: 1, sold: false, img:"" }, 
+        { id: 13, name: "Sandy Shocks ex #056/131", set: "Prismatic Evolution", price: 10, stock: 5, sold: false, img:"" }, 
+        { id: 14, name: "Amoonguss ex #011/159", set: "Journey Together", price: 15, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_623438.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 115, name: "Iron Hands ex #031/131", set: "Prismatic Evolution", price: 15, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 125, name: "Paldean Clodsire ex #094/159", set: "Journey Together", price: 15, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623521.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 135, name: "Kilowattrel ex #068/191", set: "Surging Sparks", price: 15, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589977.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 145, name: "Meloetta ex #044/086", set: "Black Bolt", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642496%20.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 15, name: "Empoleon ex #070/094", set: "Phantasmal Flames", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662155.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 16, name: "Registeel ex #145/217", set: "Ascended Heroes", price: 20, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675957.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 17, name: "Keldeo ex #030/086", set: "White Flare", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 18, name: "Garganacl ex #089/142", set: "Stellar Crown", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567315.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 19, name: "Rabsca ex #025/182", set: "Destined Rivals", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 20, name: "Noivern ex #091/131", set: "Prismatic Evolution", price: 20, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610446.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 21, name: "Togedemaru ex #249/217", set: "Ascended Heroes", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_675961.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 22, name: "Regirock ex #107/217", set: "Ascended Heroes", price: 25, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675919.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 23, name: "Grafaiai ex #100", set: "Promo Scarlet & Violet", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_546448.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 24, name: "Whimsicott ex #005/086", set: "White Flare", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642120.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 25, name: "Golem ex #076/165", set: "SV:151", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_516574.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 26, name: "Banette ex #088/198", set: "Scarlet & Violet", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_487954.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 27, name: "Iono's Bellibolt ex #053/159", set: "Journey Together", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_623480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 28, name: "Hydrapple ex #014/142", set: "Stellar Crown", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567240.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 29, name: "Kyurem ex #028/086", set: "Black Bolt", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_642480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 30, name: "Riolu (Pokeball) #050/131", set: "Prismatic Evolution", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_610572.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 31, name: "Scovillain ex #037/191", set: "Surging Sparks", price: 10, stock: 0, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590040.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 32, name: "Bouffalant ex #077/086", set: "White Flare", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642190.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 33, name: "Palossand ex #091/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_590018.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 34, name: "Team Rocket's Nidoking ex #119/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632927.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 35, name: "Serperior ex #003/086", set: "Black Bolt", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642452.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 37, name: "Arboliva ex #023/182", set: "Destined Rivals", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_630807.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 38, name: "Alolan Exeggutor ex #133/191", set: "Surging Sparks", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589858.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 39, name: "Mamoswine ex #079/159", set: "Journey Together", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623506.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 40, name: "Radiant Charjabug ex #051/159", set: "Crown Zenith", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_477055.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 41, name: "Genesect ex #067/086", set: "Black Bolt", price: 20, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642518.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 42, name: "Noivern ex #069/091", set: "Paldean Fates", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_534431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+        { id: 43, name: "Iron Boulder(ESP) ex #099/162", set: "Temporal Forces", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_542843.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
+    ];
 
     function renderGrid(cardsToRender) {
         const grid = document.getElementById('mainGrid');
@@ -271,9 +267,13 @@
         cardsToRender.forEach(c => {
             const div = document.createElement('div');
             div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
+            
+            // Si no hay imagen, muestra un texto amigable
+            const imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
+            
             div.innerHTML = `
                 ${c.sold ? '<div class="sold-badge">Vendido</div>' : ''}
-                <div class="img-container"><img src="${c.img}"></div>
+                <div class="img-container">${imageHtml}</div>
                 <div class="card-meta">
                     <div class="card-set">${c.set}</div>
                     <div class="card-name">${c.name}</div>
@@ -289,7 +289,6 @@
         updateCartUI();
     }
 
-    // LÓGICA DE ORDENAMIENTO Y FILTRO
     function handleSort() {
         const filterValue = document.getElementById('sortFilter').value;
         let sortedCards = [...cards];
@@ -309,91 +308,6 @@
 
     function openDetail(c) {
         const body = document.getElementById('modalBody');
-        body.innerHTML = `
-            <div class="modal-header">
-                <img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">
-                <div class="modal-info">
-                    <div class="card-set">${c.set}</div>
-                    <h2>${c.name}</h2>
-                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : '$' + c.price + ' MXN'}</div>
-                    <div style="font-size: 0.85rem; color: var(--text-dim)">Disponibles: ${c.stock}</div>
-                </div>
-            </div>
-            ${c.sold 
-                ? '<div class="btn-action btn-sold">ESTE ARTÍCULO YA SE VENDIÓ</div>' 
-                : `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al pedido</button>`
-            }
-        `;
-        document.getElementById('cardModal').style.display = 'flex';
-    }
-
-    function addToCart(id) {
-        const card = cards.find(c => c.id === id);
-        cart.push(card);
-        localStorage.setItem('pkmCart', JSON.stringify(cart));
-        updateCartUI();
-        closeModal();
-    }
-
-    function updateCartUI() {
-        const float = document.getElementById('cart-float');
-        const count = document.getElementById('cart-count');
-        float.style.display = cart.length > 0 ? 'block' : 'none';
-        count.innerText = cart.length;
-    }
-
-    function openCartView() {
-        const body = document.getElementById('modalBody');
-        let total = 0;
-        let itemsHTML = cart.map((item, index) => {
-            total += item.price;
-            return `
-                <div class="cart-item">
-                    <div>
-                        <div style="font-weight:600; font-size:0.9rem;">${item.name}</div>
-                        <div style="color:var(--price-green); font-size:0.85rem;">$${item.price} MXN</div>
-                    </div>
-                    <button class="remove-item" onclick="removeFromCart(${index})">✕</button>
-                </div>`;
-        }).join('');
-
-        body.innerHTML = `
-            <h2 style="margin-top:0;">Tu Pedido</h2>
-            <div style="max-height:250px; overflow-y:auto; margin-bottom:15px;">
-                ${cart.length > 0 ? itemsHTML : '<p style="text-align:center; color:var(--text-dim);">El carrito está vacío</p>'}
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.3rem; font-weight:800; padding:15px 0; border-top:1px solid #333;">
-                <span>Total:</span>
-                <span style="color:var(--price-green);">$${total} MXN</span>
-            </div>
-            ${cart.length > 0 ? `<button class="btn-action btn-whatsapp" onclick="sendWhatsApp()">Confirmar pedido por WhatsApp</button>` : ''}
-        `;
-        document.getElementById('cardModal').style.display = 'flex';
-    }
-
-    function removeFromCart(index) {
-        cart.splice(index, 1);
-        localStorage.setItem('pkmCart', JSON.stringify(cart));
-        updateCartUI();
-        if(cart.length === 0) closeModal();
-        else openCartView();
-    }
-
-    function sendWhatsApp() {
-        let text = "¡Hola! Me interesan estas cartas de tu inventario:\n\n";
-        let total = 0;
-        cart.forEach((item, i) => {
-            text += `${i+1}. ${item.name} ($${item.price} MXN)\n`;
-            total += item.price;
-        });
-        text += `\n*TOTAL: $${total} MXN*`;
-        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(text)}`, '_blank');
-    }
-
-    function closeModal() { document.getElementById('cardModal').style.display = 'none'; }
-
-    renderGrid(cards);
-</script>
-
-</body>
-</html>
+        const modal = document.getElementById('cardModal');
+        
+        const imageHtml = c.img
