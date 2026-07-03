@@ -1,218 +1,14 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POKEMON TCG SALE - Inventory</title>
-    <style>
-        :root { 
-            --bg-color: #0f111a;
-            --surface: #1a1d29;
-            --accent: #3b82f6; 
-            --text-main: #ffffff;
-            --text-dim: #94a3b8;
-            --price-green: #10b981;
-            --sold-red: #ef4444;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 15px;
-            padding-bottom: 90px;
-        }
-
-        nav {
-            padding: 20px 0;
-            max-width: 1000px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        nav h1 { font-size: 1.5rem; font-weight: 800; margin: 0; }
-
-        .filter-container {
-            background: var(--surface);
-            border: 1px solid #2d3142;
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        @media (min-width: 768px) {
-            .card-grid { grid-template-columns: repeat(4, 1fr); }
-        }
-
-        .collectr-card {
-            background: var(--surface);
-            border-radius: 12px;
-            padding: 8px;
-            border: 1px solid #2d3142;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .collectr-card.sold {
-            opacity: 0.6;
-            filter: grayscale(0.8);
-        }
-
-        .sold-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: var(--sold-red);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 6px;
-            z-index: 2;
-            text-transform: uppercase;
-        }
-
-        .img-container {
-            background: #000;
-            border-radius: 8px;
-            overflow: hidden;
-            aspect-ratio: 3/4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-dim);
-            font-size: 0.8rem;
-        }
-
-        .img-container img { width: 100%; height: auto; }
-
-        .card-meta { padding: 8px 4px; }
-        .card-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-set { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-        
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 5px;
-        }
-
-        .card-price { color: var(--price-green); font-weight: 700; font-size: 0.9rem; }
-        .card-stock-badge { font-size: 0.65rem; color: var(--text-dim); background: #333; padding: 2px 6px; border-radius: 4px; }
-
-        #cart-float {
-            position: fixed;
-            bottom: 25px; right: 25px;
-            background: var(--accent);
-            color: white;
-            padding: 16px 24px;
-            border-radius: 50px;
-            font-weight: 800;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-            cursor: pointer;
-            z-index: 100;
-            display: none;
-            border: none;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            bottom: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            z-index: 9999;
-            align-items: flex-end;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            width: 100%;
-            max-width: 600px;
-            border-radius: 20px 20px 0 0;
-            padding: 25px;
-            box-sizing: border-box;
-        }
-
-        .modal-header { display: flex; gap: 20px; border-bottom: 1px solid #2d3142; padding-bottom: 20px; }
-        .modal-img { width: 130px; border-radius: 8px; object-fit: contain; }
-        
-        .modal-info h2 { margin: 0; font-size: 1.2rem; }
-        .modal-price-big { font-size: 1.8rem; color: var(--price-green); font-weight: 800; margin: 10px 0; }
-        
-        .btn-action {
-            display: block; width: 100%; padding: 16px;
-            border-radius: 14px; font-weight: 700;
-            text-align: center; margin-top: 12px;
-            border: none; cursor: pointer; font-size: 1rem;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-
-        .btn-add { background: var(--accent); color: white; }
-        .btn-whatsapp { background: #25d366; color: white; }
-        .btn-sold { background: #333; color: #666; cursor: not-allowed; pointer-events: none; }
-
-        .close-area { text-align: center; padding-bottom: 15px; color: var(--text-dim); cursor: pointer; }
-        
-        .cart-item {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid #2d3142; padding: 12px 0;
-        }
-
-        .remove-item { color: var(--sold-red); background: none; border: none; font-size: 1.2rem; cursor: pointer; }
-    </style>
+    <title>El tianguis Pokémon-Cancún</title>
 </head>
 <body>
 
-<nav>
-    <h1>POKEMON TCG SALE</h1>
-    <select class="filter-container" id="sortFilter" onchange="handleSort()">
-        <option value="default">Ordenar por: Recientes</option>
-        <option value="price-asc">Precio: Menor a Mayor</option>
-        <option value="price-desc">Precio: Mayor a Menor</option>
-        <option value="available">Solo Disponibles</option>
-        <option value="sold">Solo Vendidos</option>
-    </select>
-</nav>
-
-<div class="card-grid" id="mainGrid"></div>
-
-<button id="cart-float" onclick="openCartView()">
-    🛒 Ver pedido (<span id="cart-count">0</span>)
-</button>
-
-<div class="modal" id="cardModal" onclick="closeModal()">
-    <div class="modal-content" onclick="event.stopPropagation()">
-        <div class="close-area" onclick="closeModal()">✕ Cerrar</div>
-        <div id="modalBody"></div>
-    </div>
-</div>
-
 <script>
-    const whatsappNumber = "9987683264";
-    let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
-
-    // BASE DE DATOS (CORREGIDA)
-    const cards = [
+const tcgProducts = [
   { id: 1, name: "Excadrill ex #046/086", set: "Black Bolt", price: 10, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642498.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 2, name: "Kilowattrel ex #068/191", set: "Surging Sparks", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589977.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 3, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632879.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -308,196 +104,197 @@
   { id: 93, name: "Mega Froslass ex #036/193", set: "MEGA Dream ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665707.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 94, name: "Mega Eelektross ex #049/193", set: "MEGA Dream ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665720.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 95, name: "N's Zoroark ex #112/193", set: "MEGA Dream ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665783.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 100, name: "Koraidon ex (JP) #114/190", set: "Shiny Treasure ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012780.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 101, name: "Snorlax ex #076/131", set: "Prismatic Evolutions", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 102, name: "Team Rocket's Kangaskhan ex #162/217", set: "Ascended Heroes", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675974.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 103, name: "Victini ex #033/197", set: "Obsidian Flames", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_509731.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 104, name: "Suicune ex #010/034", set: "Trading Card Game Classic", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_527998.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 105, name: "Regigigas V #113/159", set: "Crown Zenith", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_478142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 106, name: "Cynthia's Garchomp ex #104/182", set: "Destined Rivals", price: 50, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632912.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 107, name: "Wo-Chien ex (JP) #024/190", set: "Shiny Treasure ex", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012690.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 108, name: "Kangaskhan ex #115/165", set: "SV: 151", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516581.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 109, name: "Mega Lucario ex #113/217", set: "Ascended Heroes", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675925.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 110, name: "Shroodle #149/132", set: "Mega Evolution", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654488.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 111, name: "Toxtricity #103/094", set: "Phantasmal Flames", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662235.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 112, name: "Talonflame #091/088", set: "Perfect Order", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684406.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 113, name: "Iono's Bellibolt ex #172/159", set: "Journey Together", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623599.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 114, name: "Ting-Lu (JP) #113/190", set: "Shiny Treasure ex", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012779.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 115, name: "Togedemaru #104/094", set: "Phantasmal Flames", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662233.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 116, name: "Mega Gengar ex #056/094", set: "Phantasmal Flames", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_660380.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 117, name: "Black Kyurem ex #218/191", set: "Surging Sparks", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589875.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 118, name: "Mega Abomasnow ex #157/132", set: "Mega Evolution", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654496.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 119, name: "Zacian #100/094", set: "Phantasmal Flames", price: 130, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662245.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Iono's Kilowattrel #163/159", set: "Journey Together", price: 150, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623590.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
-]
-    function renderGrid(cardsToRender) {
-        const grid = document.getElementById('mainGrid');
-        grid.innerHTML = "";
-        cardsToRender.forEach(c => {
-            const div = document.createElement('div');
-            div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
-            
-            const imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
-            
-            div.innerHTML = `
-                ${c.sold ? '<div class="sold-badge">Vendido</div>' : ''}
-                <div class="img-container">${imageHtml}</div>
-                <div class="card-meta">
-                    <div class="card-set">${c.set}</div>
-                    <div class="card-name">${c.name}</div>
-                    <div class="card-footer">
-                        <div class="card-price">${c.sold ? '---' : '$' + c.price + ' MXN'}</div>
-                        <div class="card-stock-badge">x${c.stock}</div>
-                    </div>
-                </div>
-            `;
-            div.onclick = () => openDetail(c);
-            grid.appendChild(div);
-        });
-        updateCartUI();
-    }
+  { id: 96, name: "Koraidon ex (JP) #114/190", set: "Shiny Treasure ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012780.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 97, name: "Snorlax ex #076/131", set: "Prismatic Evolutions", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 98, name: "Team Rocket's Kangaskhan ex #162/217", set: "Ascended Heroes", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675974.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 99, name: "Victini ex #033/197", set: "Obsidian Flames", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_509731.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 100, name: "Suicune ex #010/034", set: "Trading Card Game Classic", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_527998.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 101, name: "Regigigas V #113/159", set: "Crown Zenith", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_478142.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 102, name: "Cynthia's Garchomp ex #104/182", set: "Destined Rivals", price: 50, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632912.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 103, name: "Wo-Chien ex (JP) #024/190", set: "Shiny Treasure ex", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012690.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 104, name: "Kangaskhan ex #115/165", set: "SV: 151", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516581.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 105, name: "Mega Lucario ex #113/217", set: "Ascended Heroes", price: 60, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675925.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 106, name: "Shroodle #149/132", set: "Mega Evolution", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654488.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 107, name: "Toxtricity #103/094", set: "Phantasmal Flames", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662235.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 108, name: "Talonflame #091/088", set: "Perfect Order", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684406.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 109, name: "Iono's Bellibolt ex #172/159", set: "Journey Together", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623599.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 110, name: "Ting-Lu (JP) #113/190", set: "Shiny Treasure ex", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012779.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 111, name: "Togedemaru #104/094", set: "Phantasmal Flames", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662233.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 112, name: "Mega Gengar ex #056/094", set: "Phantasmal Flames", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_660380.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 113, name: "Black Kyurem ex #218/191", set: "Surging Sparks", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_589875.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 114, name: "Mega Abomasnow ex #157/132", set: "Mega Evolution", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654496.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 115, name: "Zacian #100/094", set: "Phantasmal Flames", price: 130, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662245.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 116, name: "Iono's Kilowattrel #163/159", set: "Journey Together", price: 150, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623590.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
+];
 
-    function handleSort() {
-        const filterValue = document.getElementById('sortFilter').value;
-        let sortedCards = [...cards];
-
-        if (filterValue === "price-asc") {
-            sortedCards.sort((a, b) => a.price - b.price);
-        } else if (filterValue === "price-desc") {
-            sortedCards.sort((a, b) => b.price - a.price);
-        } else if (filterValue === "available") {
-            sortedCards = sortedCards.filter(c => !c.sold);
-        } else if (filterValue === "sold") {
-            sortedCards = sortedCards.filter(c => c.sold);
-        }
-
-        renderGrid(sortedCards);
-    }
-
-    function openDetail(c) {
-        const body = document.getElementById('modalBody');
-        const modal = document.getElementById('cardModal');
+function renderGrid(cardsToRender) {
+    const grid = document.getElementById('mainGrid');
+    grid.innerHTML = "";
+    cardsToRender.forEach(c => {
+        const div = document.createElement('div');
+        div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
         
-        const imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
+        const imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
         
-        let actionButton = '';
-        if (c.sold) {
-            actionButton = `<button class="btn-action btn-sold">AGOTADO</button>`;
-        } else {
-            actionButton = `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al Pedido</button>`;
-        }
-
-        body.innerHTML = `
-            <div class="modal-header">
-                ${imageHtml}
-                <div class="modal-info">
-                    <div class="card-set">${c.set}</div>
-                    <h2>${c.name}</h2>
-                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : '$' + c.price + ' MXN'}</div>
-                    <div style="color:var(--text-dim)">Disponibles: ${c.stock}</div>
+        div.innerHTML = `
+            ${c.sold ? '<div class="sold-badge">Vendido</div>' : ''}
+            <div class="img-container">${imageHtml}</div>
+            <div class="card-meta">
+                <div class="card-set">${c.set}</div>
+                <div class="card-name">${c.name}</div>
+                <div class="card-footer">
+                    <div class="card-price">${c.sold ? '---' : '$' + c.price + ' MXN'}</div>
+                    <div class="card-stock-badge">x${c.stock}</div>
                 </div>
             </div>
-            ${actionButton}
         `;
-        modal.style.display = "flex";
+        div.onclick = () => openDetail(c);
+        grid.appendChild(div);
+    });
+    updateCartUI();
+}
+
+function handleSort() {
+    const filterValue = document.getElementById('sortFilter').value;
+    let sortedCards = [...tcgProducts];
+
+    if (filterValue === "price-asc") {
+        sortedCards.sort((a, b) => a.price - b.price);
+    } else if (filterValue === "price-desc") {
+        sortedCards.sort((a, b) => b.price - a.price);
+    } else if (filterValue === "available") {
+        sortedCards = sortedCards.filter(c => !c.sold);
+    } else if (filterValue === "sold") {
+        sortedCards = sortedCards.filter(c => c.sold);
     }
 
-    function closeModal() {
-        document.getElementById('cardModal').style.display = "none";
+    renderGrid(sortedCards);
+}
+
+function openDetail(c) {
+    const body = document.getElementById('modalBody');
+    const modal = document.getElementById('cardModal');
+    
+    const imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
+    
+    let actionButton = '';
+    if (c.sold) {
+        actionButton = `<button class="btn-action btn-sold">AGOTADO</button>`;
+    } else {
+        actionButton = `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al Pedido</button>`;
     }
 
-    function addToCart(id) {
-        const card = cards.find(c => c.id === id);
-        const cartItem = cart.find(item => item.id === id);
-        
-        if (cartItem) {
-            if (cartItem.quantity < card.stock) {
-                cartItem.quantity++;
-            } else {
-                alert("No hay más stock disponible de esta carta.");
-                return;
-            }
+    body.innerHTML = `
+        <div class="modal-header">
+            ${imageHtml}
+            <div class="modal-info">
+                <div class="card-set">${c.set}</div>
+                <h2>${c.name}</h2>
+                <div class="modal-price-big">${c.sold ? 'AGOTADO' : '$' + c.price + ' MXN'}</div>
+                <div style="color:var(--text-dim)">Disponibles: ${c.stock}</div>
+            </div>
+        </div>
+        ${actionButton}
+    `;
+    modal.style.display = "flex";
+}
+
+function closeModal() {
+    document.getElementById('cardModal').style.display = "none";
+}
+
+function addToCart(id) {
+    const card = tcgProducts.find(c => c.id === id);
+    const cartItem = cart.find(item => item.id === id);
+    
+    if (cartItem) {
+        if (cartItem.quantity < card.stock) {
+            cartItem.quantity++;
         } else {
-            cart.push({ id: card.id, name: card.name, price: card.price, quantity: 1 });
-        }
-        
-        localStorage.setItem('pkmCart', JSON.stringify(cart));
-        updateCartUI();
-        closeModal();
-    }
-
-    function removeFromCart(id) {
-        cart = cart.filter(item => item.id !== id);
-        localStorage.setItem('pkmCart', JSON.stringify(cart));
-        openCartView();
-        updateCartUI();
-    }
-
-    function updateCartUI() {
-        const countEl = document.getElementById('cart-count');
-        const floatBtn = document.getElementById('cart-float');
-        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-        
-        countEl.innerText = totalItems;
-        floatBtn.style.display = totalItems > 0 ? "block" : "none";
-    }
-
-    function openCartView() {
-        const body = document.getElementById('modalBody');
-        const modal = document.getElementById('cardModal');
-        
-        if (cart.length === 0) {
-            body.innerHTML = `<h2>Tu pedido está vacío</h2>`;
-            modal.style.display = "flex";
+            alert("No hay más stock disponible de esta carta.");
             return;
         }
+    } else {
+        cart.push({ id: card.id, name: card.name, price: card.price, quantity: 1 });
+    }
+    
+    localStorage.setItem('pkmCart', JSON.stringify(cart));
+    updateCartUI();
+    closeModal();
+}
 
-        let itemsHtml = '';
-        let total = 0;
-        
-        cart.forEach(item => {
-            const subtotal = item.price * item.quantity;
-            total += subtotal;
-            itemsHtml += `
-                <div class="cart-item">
-                    <div>
-                        <strong>${item.name}</strong><br>
-                        <span style="color:var(--text-dim)">$${item.price} MXN x ${item.quantity}</span>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-weight:700">$${subtotal} MXN</span>
-                        <button class="remove-item" onclick="removeFromCart(${item.id})">🗑️</button>
-                    </div>
-                </div>
-            `;
-        });
+function removeFromCart(id) {
+    cart = cart.filter(item => item.id !== id);
+    localStorage.setItem('pkmCart', JSON.stringify(cart));
+    openCartView();
+    updateCartUI();
+}
 
-        let message = "¡Hola! Me interesan las siguientes cartas:\n\n";
-        cart.forEach(item => {
-            message += `- ${item.name} (x${item.quantity}) - $${item.price * item.quantity} MXN\n`;
-        });
-        message += `\nTotal: $${total} MXN`;
-        const encodedMessage = encodeURIComponent(message);
+function updateCartUI() {
+    const countEl = document.getElementById('cart-count');
+    const floatBtn = document.getElementById('cart-float');
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    countEl.innerText = totalItems;
+    floatBtn.style.display = totalItems > 0 ? "block" : "none";
+}
 
-        body.innerHTML = `
-            <h2>Tu Pedido</h2>
-            <div style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
-                ${itemsHtml}
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; margin:15px 0;">
-                <span>Total:</span>
-                <span style="color:var(--price-green)">$${total} MXN</span>
-            </div>
-            <a class="btn-action btn-whatsapp" href="https://wa.me/${whatsappNumber}?text=${encodedMessage}" target="_blank">
-                Enviar pedido por WhatsApp
-            </a>
-        `;
+function openCartView() {
+    const body = document.getElementById('modalBody');
+    const modal = document.getElementById('cardModal');
+    
+    if (cart.length === 0) {
+        body.innerHTML = `<h2>Tu pedido está vacío</h2>`;
         modal.style.display = "flex";
+        return;
     }
 
-    window.onload = () => {
-        renderGrid(cards);
-    };
+    let itemsHtml = '';
+    let total = 0;
+    
+    cart.forEach(item => {
+        const subtotal = item.price * item.quantity;
+        total += subtotal;
+        itemsHtml += `
+            <div class="cart-item">
+                <div>
+                    <strong>${item.name}</strong><br>
+                    <span style="color:var(--text-dim)">$${item.price} MXN x ${item.quantity}</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-weight:700">$${subtotal} MXN</span>
+                    <button class="remove-item" onclick="removeFromCart(${item.id})">🗑️</button>
+                </div>
+            </div>
+        `;
+    });
+
+    let message = "¡Hola! Me interesan las siguientes cartas:\n\n";
+    cart.forEach(item => {
+        message += `- ${item.name} (x${item.quantity}) - $${item.price * item.quantity} MXN\n`;
+    });
+    message += `\nTotal: $${total} MXN`;
+    const encodedMessage = encodeURIComponent(message);
+
+    body.innerHTML = `
+        <h2>Tu Pedido</h2>
+        <div style="max-height: 250px; overflow-y: auto; margin-bottom: 15px;">
+            ${itemsHtml}
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; margin:15px 0;">
+            <span>Total:</span>
+            <span style="color:var(--price-green)">$${total} MXN</span>
+        </div>
+        <a class="btn-action btn-whatsapp" href="https://wa.me/${whatsappNumber}?text=${encodedMessage}" target="_blank">
+            Enviar pedido por WhatsApp
+        </a>
+    `;
+    modal.style.display = "flex";
+}
+
+window.onload = () => {
+    renderGrid(tcgProducts);
+};
 </script>
 </body>
 </html>
