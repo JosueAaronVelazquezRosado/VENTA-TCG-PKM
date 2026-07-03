@@ -84,7 +84,6 @@
             border-color: var(--accent);
         }
 
-        /* Estilo personalizado para hacer la X automática visible y estética en fondos oscuros */
         .search-input::-webkit-search-cancel-button {
             -webkit-appearance: none;
             height: 14px;
@@ -103,6 +102,51 @@
             font-size: 0.9rem;
             outline: none;
             cursor: pointer;
+        }
+
+        /* --- BOTONERA DE EXPANSIONES --- */
+        .set-buttons-container {
+            max-width: 1000px;
+            margin: 0 auto 20px auto;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: thin;
+        }
+
+        .set-buttons-container::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .set-buttons-container::-webkit-scrollbar-thumb {
+            background: #2d3142;
+            border-radius: 4px;
+        }
+
+        .set-btn {
+            background: var(--surface);
+            border: 1px solid #2d3142;
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .set-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-main);
+        }
+
+        .set-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
         }
 
         .card-grid {
@@ -258,6 +302,74 @@
         }
 
         .remove-item { color: var(--sold-red); background: none; border: none; font-size: 1.2rem; cursor: pointer; }
+
+        /* --- ESTILOS DEL PIE DE PÁGINA --- */
+        .info-footer {
+            background: var(--surface);
+            border: 1px solid #2d3142;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 30px auto 0 auto;
+            box-sizing: border-box;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .footer-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .footer-section h3 {
+            color: var(--accent);
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-section p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            margin: 5px 0;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .social-btn {
+            background: #2d3142;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .social-btn:hover {
+            background: var(--accent);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #2d3142;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+        }
     </style>
 </head>
 <body>
@@ -281,7 +393,51 @@
     </div>
 </nav>
 
+<div class="set-buttons-container" id="setButtonsGrid">
+    <button class="set-btn active" onclick="filterBySet('all', this)">✨ Todas</button>
+    <button class="set-btn" onclick="filterBySet('Surging Sparks', this)">⚡ Surging Sparks</button>
+    <button class="set-btn" onclick="filterBySet('Prismatic Evolution', this)">💎 Prismatic</button>
+    <button class="set-btn" onclick="filterBySet('Ascended Heroes', this)">🏆 Ascended Heroes</button>
+    <button class="set-btn" onclick="filterBySet('Destined Rivals', this)">⚔️ Destined Rivals</button>
+    <button class="set-btn" onclick="filterBySet('Phantasmal Flames', this)">🔥 Phantasmal</button>
+    <button class="set-btn" onclick="filterBySet('Journey Together', this)">🎒 Journey Together</button>
+    <button class="set-btn" onclick="filterBySet('Mega Evolution', this)">🧬 Mega Evolution</button>
+    <button class="set-btn" onclick="filterBySet('SV: 151', this)">🗺️ SV: 151</button>
+</div>
+
 <div class="card-grid" id="mainGrid"></div>
+
+<footer class="info-footer">
+    <div class="footer-grid">
+        <div class="footer-section">
+            <h3>📍 Ubicación y Horarios</h3>
+            <p><strong>Tianguis de la 100 (Cancún, Q. Roo)</strong></p>
+            <p>🗓️ Sábados y Domingos</p>
+            <p>⏰ 7:00 AM - 2:00 PM</p>
+            <p>⛺ <em>Encuéntranos en el pasillo principal frente a la zona de comida.</em></p>
+        </div>
+
+        <div class="footer-section">
+            <h3>💳 Pagos y Confianza</h3>
+            <p>💵 Efectivo</p>
+            <p>📱 Transferencia SPEI (BBVA / Banamex / etc.)</p>
+            <p>🛡️ <strong>Garantía:</strong> Todas nuestras piezas son 100% auténticas y protegidas en micas (sleeves) desde el primer momento.</p>
+        </div>
+
+        <div class="footer-section">
+            <h3>📱 Contacto y Redes</h3>
+            <p>¿Buscas alguna carta en específico o quieres vender/cambiar tus códigos o colecciones? ¡Escríbenos!</p>
+            <div class="footer-socials">
+                <a href="https://wa.me/9987683264" target="_blank" class="social-btn" style="background:#25d366;">WhatsApp</a>
+                <a href="https://www.facebook.com/tu-pagina" target="_blank" class="social-btn" style="background:#1877f2;">Facebook</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <p>© 2026 El Tianguis Pokémon-Cancún. Tu puesto de confianza. Todos los derechos reservados.</p>
+    </div>
+</footer>
 
 <button id="cart-float" onclick="openCartView()">
     🛒 Ver pedido (<span id="cart-count">0</span>)
@@ -297,6 +453,7 @@
 <script>
     const whatsappNumber = "9987683264";
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
+    let selectedSet = "all"; // Rastreador de expansión seleccionada
 
     // BASE DE DATOS (CORREGIDA)
     const cards = [
@@ -329,7 +486,7 @@
   { id: 27, name: "Rabsca ex #025/182", set: "Destined Rivals", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 28, name: "Togedemaru ex #249/217", set: "Ascended Heroes", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_675961.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 29, name: "Squawkabilly ex #169/193", set: "Prize Pack Series One", price: 20, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_538741.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 30, name: "Iron Thorns ex #032/131", set: "Prismatic Evolutions", price: 20, stock: 6, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610387.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 30, name: "Iron Thorns ex #032/131", set: "Prismatic Evolution", price: 20, stock: 6, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610387.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 31, name: "Voltorb ex #058/217", set: "Ascended Heroes", price: 20, stock: 4, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675870.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 32, name: "Regirock ex #107/217", set: "Ascended Heroes", price: 25, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675919.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 33, name: "Okidogi ex #036/064", set: "Prize Pack Series One", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_619155.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -359,20 +516,20 @@
   { id: 57, name: "Meowscarada ex #015/193", set: "Paldea Evolved", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_497426.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 58, name: "Mega Sharpedo ex #061/094", set: "Phantasmal Flames", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662191.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 59, name: "Erika's Vileplume ex #003/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675815.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 60, name: "Tyranitar ex #064/131", set: "Prismatic Evolutions", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610419.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 60, name: "Tyranitar ex #064/131", set: "Prismatic Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610419.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 61, name: "Miraidon ex #028", set: "Scarlet & Violet Promo", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_500062.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 62, name: "Team Rocket's Moltres ex #031/182", set: "Destined Rivals", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_630808.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 63, name: "Zekrom ex #034/086", set: "Black Bolt", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642486.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 64, name: "Miraidon ex #073/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675885.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 65, name: "Mega Manectric ex #050/132", set: "Mega Evolution", price: 30, stock: 9, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654389.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 66, name: "Mega Diancie ex #041/094", set: "Phantasmal Flames", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_660379.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 66, name: "Mega Diancie ex #041/094", set: "Phantasmal Flames", price: 30, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_660380.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 67, name: "Mega Absol ex #086/132 (ESP)", set: "Mega Evolution", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654425.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 68, name: "Mega Heracross ex #004/094", set: "Phantasmal Flames", price: 30, stock: 10, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662186.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 69, name: "Mega Mawile ex #094/132", set: "Mega Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654433.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 70, name: "Mega Latias ex #100/132", set: "Mega Evolution", price: 30, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654439.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 71, name: "Mega Abomasnow ex #036/132", set: "Mega Evolution", price: 30, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654375.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 72, name: "Mega Camerupt ex #022/132", set: "Mega Evolution", price: 30, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654361.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 73, name: "Cornerstone Mask Ogerpon ex #058/131", set: "Prismatic Evolutions", price: 35, stock: 4, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610413.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 73, name: "Cornerstone Mask Ogerpon ex #058/131", set: "Prismatic Evolution", price: 35, stock: 4, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610413.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 74, name: "Hisuian Arcanine V #090/195", set: "Silver Tempest", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_451744.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 75, name: "Cinderace ex #038/217", set: "Ascended Heroes", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675850.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 76, name: "Yveltal ex #053/088", set: "Perfect Order", price: 35, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -385,7 +542,7 @@
   { id: 83, name: "Mega Eelektross ex #061/217", set: "Ascended Heroes", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675873.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 84, name: "Mega Kangaskhan ex - 025", set: "Mega Evolution Promos", price: 45, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_668509.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 85, name: "Zacian V #016/025", set: "Celebrations", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_250313.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 86, name: "Lucario ex #051/131", set: "Prismatic Evolutions", price: 45, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610406.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 86, name: "Lucario ex #051/131", set: "Prismatic Evolution", price: 45, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610406.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 87, name: "Mega Emboar ex #031/217", set: "Ascended Heroes", price: 45, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675843.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 88, name: "Mega Gardevoir ex #060/132", set: "Mega Evolution", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654399.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 89, name: "Zamazenta V #018/025", set: "Celebrations", price: 45, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_250299.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -396,7 +553,7 @@
   { id: 94, name: "Mega Eelektross ex #049/193", set: "MEGA Dream ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665720.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 95, name: "N's Zoroark ex #112/193", set: "MEGA Dream ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665783.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 96, name: "Koraidon ex (JP) #114/190", set: "Shiny Treasure ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012780.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 97, name: "Snorlax ex #076/131", set: "Prismatic Evolutions", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 97, name: "Snorlax ex #076/131", set: "Prismatic Evolution", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610431.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 98, name: "Team Rocket's Kangaskhan ex #162/217", set: "Ascended Heroes", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675974.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 99, name: "Victini ex #033/197", set: "Obsidian Flames", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_509731.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 100, name: "Suicune ex #010/034", set: "Trading Card Game Classic", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_527998.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -427,7 +584,6 @@
             
             const imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
             
-            // Lógica para el indicador de pocas unidades (Stock 1 o 2)
             let lowStockHtml = '';
             if (!c.sold && (c.stock === 1 || c.stock === 2)) {
                 lowStockHtml = `<div class="low-stock-badge">⏳ ¡Últimas!</div>`;
@@ -451,18 +607,36 @@
         updateCartUI();
     }
 
+    // Nueva función para manejar los clics de la botonera de expansiones
+    function filterBySet(setName, buttonElement) {
+        selectedSet = setName;
+        
+        // Quitar clase activa de todos los botones y ponérsela al seleccionado
+        const buttons = document.querySelectorAll('.set-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        buttonElement.classList.add('active');
+        
+        // Volver a ordenar y filtrar el catálogo completo
+        handleSort();
+    }
+
     function handleSort() {
         const filterValue = document.getElementById('sortFilter').value;
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         
         let filteredCards = [...cards];
 
-        // Ejecutar el buscador de texto primero
+        // 1. Filtrar por Expansión Activa (Botonera)
+        if (selectedSet !== "all") {
+            filteredCards = filteredCards.filter(c => c.set === selectedSet);
+        }
+
+        // 2. Filtrar por Buscador de texto
         if (searchQuery !== "") {
             filteredCards = filteredCards.filter(c => c.name.toLowerCase().includes(searchQuery));
         }
 
-        // Ejecutar los filtros y ordenamiento sobre el resultado buscado
+        // 3. Ejecutar ordenamientos o filtros de estado (Disponibles / Vendidos)
         if (filterValue === "price-asc") {
             filteredCards.sort((a, b) => a.price - b.price);
         } else if (filterValue === "price-desc") {
