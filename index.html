@@ -373,12 +373,15 @@
         <div class="search-container">
             <input type="search" class="search-input" id="searchInput" placeholder="Buscar Pokémon..." oninput="handleSort()" onsearch="handleSort()">
         </div>
+        <select class="filter-container" id="statusFilter" onchange="handleSort()">
+            <option value="all">Todos los estados</option>
+            <option value="available">Solo Disponibles ✅</option>
+            <option value="sold">Solo Vendidos ❌</option>
+        </select>
         <select class="filter-container" id="sortFilter" onchange="handleSort()">
             <option value="default">Ordenar por: Recientes</option>
             <option value="price-asc">Precio: Menor a Mayor</option>
             <option value="price-desc">Precio: Mayor a Menor</option>
-            <option value="available">Solo Disponibles</option>
-            <option value="sold">Solo Vendidos</option>
         </select>
     </div>
 </nav>
@@ -445,7 +448,7 @@
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
     let selectedSet = "all";
 
-    // BASE DE DATOS REBUELTA COMPLETAMENTE CORREGIDA Y SIN DUPLICADOS
+    // BASE DE DATOS REBUELTA COMPLETAMENTE CORREGIDA Y SIN DUPLICADOS (IDs REPARADOS)
     const cards = [
   { id: 60, name: "Tyranitar ex #064/131", set: "Prismatic Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610419.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 14, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -537,22 +540,22 @@
   { id: 34, name: "Eiscue ex (Holiday Calendar) #042/197", set: "Miscellaneous Cards & Products", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_579994.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 67, name: "Mega Absol ex #086/132 (ESP)", set: "Mega Evolution", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654425.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 20, name: "Arven's Mabosstiff ex #139/182", set: "Destined Rivals", price: 15, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632946.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 20, name: "Arven's Mabosstiff ex #218/182", set: "Destined Rivals", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_633018.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 114, name: "Mega Abomasnow ex #157/132", set: "Mega Evolution", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654496.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 83, name: "Victini ex #033/197", set: "Obsidian Flames", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_509731.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 120, name: "Arven's Mabosstiff ex #218/182", set: "Destined Rivals", price: 70, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_633018.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 121, name: "Mega Abomasnow ex #157/132", set: "Mega Evolution", price: 90, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654496.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 122, name: "Victini ex #033/197", set: "Obsidian Flames", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_509731.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 61, name: "Miraidon ex #028", set: "Scarlet & Violet Promo", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_500062.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Okidogi ex #036/064 (ESP)", set: "Prize Pack Series One", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_619155.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Erika's Vileplume ex #003/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675815.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Mega Sharpedo ex #061/094", set: "Phantasmal Flames", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662191.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Miraidon ex #073/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675885.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Mega Mawile ex #094/132", set: "Mega Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654433.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Mega Heracross ex #004/094", set: "Phantasmal Flames", price: 30, stock: 10, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662186.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Zekrom ex #034/086", set: "Black Bolt", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642486.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Mega Camerupt ex #22/132", set: "Mega Evolution", price: 30, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654361.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Cofagrigus ex #076/182", set: "Paradox Rift", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_523736.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadataa" },
-  { id: 120, name: "Yveltal ex #053/088", set: "Perfect Order", price: 35, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadataa" },
-  { id: 120, name: "Team Rocket's Nidoking ex #119/182", set: "Destined Rivals", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632927.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 120, name: "Origin Forme Palkia V #039/189", set: "Astral Radiance", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_272239.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
+  { id: 123, name: "Okidogi ex #036/064 (ESP)", set: "Prize Pack Series One", price: 25, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_619155.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 124, name: "Erika's Vileplume ex #003/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675815.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 125, name: "Mega Sharpedo ex #061/094", set: "Phantasmal Flames", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662191.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 126, name: "Miraidon ex #073/217", set: "Ascended Heroes", price: 30, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675885.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 127, name: "Mega Mawile ex #094/132", set: "Mega Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654433.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 128, name: "Mega Heracross ex #004/094", set: "Phantasmal Flames", price: 30, stock: 10, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662186.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 129, name: "Zekrom ex #034/086", set: "Black Bolt", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_642486.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 130, name: "Mega Camerupt ex #22/132", set: "Mega Evolution", price: 30, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654361.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 131, name: "Cofagrigus ex #076/182", set: "Paradox Rift", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_523736.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadataa" },
+  { id: 132, name: "Yveltal ex #053/088", set: "Perfect Order", price: 35, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_684386.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadataa" },
+  { id: 133, name: "Team Rocket's Nidoking ex #119/182", set: "Destined Rivals", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632927.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 134, name: "Origin Forme Palkia V #039/189", set: "Astral Radiance", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_272239.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" }
 ];
 
     function renderGrid(cardsToRender) {
@@ -599,6 +602,7 @@
     }
 
     function handleSort() {
+        const statusValue = document.getElementById('statusFilter').value;
         const filterValue = document.getElementById('sortFilter').value;
         const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
         
@@ -614,15 +618,18 @@
             filteredCards = filteredCards.filter(c => c.name.toLowerCase().includes(searchQuery));
         }
 
-        // 3. Ejecutar ordenamientos específicos del select
+        // 3. Filtrar por Estado (Disponibles / Vendidos)
+        if (statusValue === "available") {
+            filteredCards = filteredCards.filter(c => !c.sold);
+        } else if (statusValue === "sold") {
+            filteredCards = filteredCards.filter(c => c.sold);
+        }
+
+        // 4. Ejecutar ordenamientos específicos del select de precio
         if (filterValue === "price-asc") {
             filteredCards.sort((a, b) => a.price - b.price);
         } else if (filterValue === "price-desc") {
             filteredCards.sort((a, b) => b.price - a.price);
-        } else if (filterValue === "available") {
-            filteredCards = filteredCards.filter(c => !c.sold);
-        } else if (filterValue === "sold") {
-            filteredCards = filteredCards.filter(c => c.sold);
         }
 
         renderGrid(filteredCards);
