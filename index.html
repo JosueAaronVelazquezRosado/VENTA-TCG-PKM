@@ -490,15 +490,18 @@
     const whatsappNumber = "9987683264";
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
     let selectedSet = "all";
-    let currentModalQty = 1; // Control de cantidad temporal global para el modal abierto
+    let currentModalQty = 1;
 
     const cards = [
-  // --- SECCIÓN ACCESORIOS ---
-  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 5, stock: 50, sold: false, img: "images.jpg", isSleeve: true, displayPrice: "$5 c/u o 3x$10" },
-  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 100, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
-  { id: 903, name: "Toploader Azul", set: "Accesorios", price: 10, stock: 10, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
+  // =========================================================================
+  // 👇 CAMBIA LOS ENLACES DE ABAJO POR LOS NOMBRES DE TUS ARCHIVOS LOCALES 👇
+  // Ejemplos: "micas.jpg", "top_transparente.png", "top_azul.webp"
+  // =========================================================================
+  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 5, stock: 100, sold: false, img: "micas.jpg", isSleeve: true, displayPrice: "$5 c/u o 3x$10" },
+  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 100, sold: false, img: "toploader_transparente.png", isToploader: true, displayPrice: "$10 (2x$15)" },
+  { id: 903, name: "Toploader Azul", set: "Accesorios", price: 10, stock: 40, sold: false, img: "toploader_azul.jpg", isToploader: true, displayPrice: "$10 (2x$15)" },
 
-  // --- CARTAS ---
+  // --- BASE DE DATOS DE CARTAS ---
   { id: 60, name: "Tyranitar ex #064/131", set: "Prismatic Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610419.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 14, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 116, name: "Iono's Kilowattrel #163/159", set: "Journey Together", price: 150, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623590.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -582,7 +585,7 @@
   { id: 88, name: "Mega Gardevoir ex #060/132", set: "Mega Evolution", price: 45, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654399.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 43, name: "Iono's Bellibolt ex #053/159", set: "Journey Together", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_623480.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 92, name: "Hop's Zacian ex #123/193", set: "MEGA Dream ex", price: 45, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_665794.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 16, name: "Flamigo ex #160/191", set: "Surging Sparks", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_589945.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 16, name: "Flamigo ex #160/191", set: "Surging Sparks", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/with=1200&quality=80&strip=metadata" },
   { id: 75, name: "Cinderace ex #038/217", set: "Ascended Heroes", price: 35, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_675850.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 27, name: "Rabsca ex #025/182", set: "Destined Rivals", price: 20, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_632848.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 107, name: "Toxtricity #103/094", set: "Phantasmal Flames", price: 80, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_662235.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -614,12 +617,15 @@
             const div = document.createElement('div');
             div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
             
+            // SE REPARÓ ESTA SECCIÓN: Si tiene un archivo escrito en 'img', cargará la imagen.
             let imageHtml = '';
-            if (c.set === "Accesorios") {
+            if (c.img && c.img.trim() !== "") {
+                imageHtml = `<img src="${c.img}" alt="${c.name}">`;
+            } else if (c.set === "Accesorios") {
                 let icon = c.isSleeve ? "🃏" : "🛡️";
                 imageHtml = `<div class="accessory-icon">${icon}</div><span>${c.name}</span>`;
             } else {
-                imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
+                imageHtml = `<span>Sin Imagen</span>`;
             }
             
             let lowStockHtml = '';
@@ -697,14 +703,17 @@
     function openDetail(c) {
         const body = document.getElementById('modalBody');
         const modal = document.getElementById('cardModal');
-        currentModalQty = 1; // Reiniciar selector a 1 cada que se abre un detalle
+        currentModalQty = 1; 
         
+        // SE REPARÓ ESTA SECCIÓN: Si tiene archivo escrito en 'img', cargará la imagen en el modal.
         let imageHtml = '';
-        if (c.set === "Accesorios") {
+        if (c.img && c.img.trim() !== "") {
+            imageHtml = `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">`;
+        } else if (c.set === "Accesorios") {
             let icon = c.isSleeve ? "🃏" : "🛡️";
             imageHtml = `<div class="modal-img-fallback">${icon}</div>`;
         } else {
-            imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
+            imageHtml = `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
         }
         
         let actionControls = '';
@@ -782,14 +791,12 @@
         let totalToploadersCount = 0;
         let details = [];
 
-        // Contar toploaders totales (combinando ambos artículos)
         cart.forEach(item => {
             if (item.isToploader) {
                 totalToploadersCount += item.quantity;
             }
         });
 
-        // Lógica de promociones para Toploaders (2x$15, sobrantes a $10)
         let toploaderPairs = Math.floor(totalToploadersCount / 2);
         let toploaderSingles = totalToploadersCount % 2;
         let totalToploaderPrice = (toploaderPairs * 15) + (toploaderSingles * 10);
@@ -798,17 +805,14 @@
             let itemSubtotal = 0;
 
             if (item.isSleeve) {
-                // Nueva promoción estructurada para micas: Grupos de 3 a $10, individuales a $5
                 let groupsOfThree = Math.floor(item.quantity / 3);
                 let remainingSleeves = item.quantity % 3;
                 itemSubtotal = (groupsOfThree * 10) + (remainingSleeves * 5);
                 total += itemSubtotal;
             } else if (item.isToploader) {
-                // Desglose visual proporcional equilibrado en base a los toploaders totales
                 let proportion = item.quantity / totalToploadersCount;
                 itemSubtotal = Math.round(totalToploaderPrice * proportion);
             } else {
-                // Cartas normales
                 itemSubtotal = item.price * item.quantity;
                 total += itemSubtotal;
             }
