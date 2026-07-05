@@ -276,6 +276,42 @@
         .modal-info h2 { margin: 0; font-size: 1.2rem; }
         .modal-price-big { font-size: 1.8rem; color: var(--price-green); font-weight: 800; margin: 10px 0; }
          
+        /* --- SELECTOR DE CANTIDAD --- */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            background: #2d3142;
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .quantity-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .quantity-btn:disabled {
+            background: #4a4f68;
+            cursor: not-allowed;
+        }
+        .quantity-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            width: 40px;
+            text-align: center;
+        }
+
         .btn-action {
             display: block; width: 100%; padding: 16px;
             border-radius: 14px; font-weight: 700;
@@ -398,7 +434,7 @@
     <button class="set-btn" onclick="filterBySet('Prismatic Evolution', this)">💎 Prismatic</button>
     <button class="set-btn" onclick="filterBySet('Ascended Heroes', this)">🏆 Ascended Heroes</button>
     <button class="set-btn" onclick="filterBySet('Destined Rivals', this)">⚔️ Destined Rivals</button>
-    <button class="set-btn" onclick="filterBySet('Phantasmal Flames', this), this">🔥 Phantasmal</button>
+    <button class="set-btn" onclick="filterBySet('Phantasmal Flames', this)">🔥 Phantasmal</button>
     <button class="set-btn" onclick="filterBySet('Journey Together', this)">🎒 Journey Together</button>
     <button class="set-btn" onclick="filterBySet('Mega Evolution', this)">🧬 Mega Evolution</button>
     <button class="set-btn" onclick="filterBySet('SV: 151', this)">🗺️ SV: 151</button>
@@ -454,11 +490,12 @@
     const whatsappNumber = "9987683264";
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
     let selectedSet = "all";
+    let currentModalQty = 1; // Control de cantidad temporal global para el modal abierto
 
     const cards = [
-  // --- SECCIÓN NUEVA: ACCESORIOS ---
-  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 3.33, stock: 100, sold: false, img: "", isSleeve: true, displayPrice: "3x$10" },
-  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 50, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
+  // --- SECCIÓN ACCESORIOS ---
+  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 5, stock: 100, sold: false, img: "", isSleeve: true, displayPrice: "$5 c/u o 3x$10" },
+  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 100, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
   { id: 903, name: "Toploader Azul", set: "Accesorios", price: 10, stock: 40, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
 
   // --- CARTAS ---
@@ -482,7 +519,7 @@
   { id: 3, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632879.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 65, name: "Mega Manectric ex #050/132", set: "Mega Evolution", price: 30, stock: 9, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654389.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 44, name: "Hydrapple ex #014/142", set: "Stellar Crown", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567240.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 78, name: "Jynx ex #124/165", set: "SV: 151", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/with=1200&quality=80&strip=metadata" },
+  { id: 78, name: "Jynx ex #124/165", set: "SV: 151", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516687.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 10, name: "Sandy Shocks ex #056/131", set: "Prismatic Evolution", price: 10, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610411.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 96, name: "Koraidon ex (JP) #114/190", set: "Shiny Treasure ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012780.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 15, name: "Mismagius ex #036/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -613,11 +650,9 @@
 
     function filterBySet(setName, buttonElement) {
         selectedSet = setName;
-        
         const buttons = document.querySelectorAll('.set-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
         buttonElement.classList.add('active');
-        
         handleSort();
     }
 
@@ -651,9 +686,18 @@
         renderGrid(filteredCards);
     }
 
+    function changeModalQty(amount, maxStock) {
+        let newQty = currentModalQty + amount;
+        if (newQty >= 1 && newQty <= maxStock) {
+            currentModalQty = newQty;
+            document.getElementById('modal-qty-val').innerText = currentModalQty;
+        }
+    }
+
     function openDetail(c) {
         const body = document.getElementById('modalBody');
         const modal = document.getElementById('cardModal');
+        currentModalQty = 1; // Reiniciar selector a 1 cada que se abre un detalle
         
         let imageHtml = '';
         if (c.set === "Accesorios") {
@@ -663,11 +707,19 @@
             imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
         }
         
-        let actionButton = '';
+        let actionControls = '';
         if (c.sold) {
-            actionButton = `<button class="btn-action btn-sold">AGOTADO</button>`;
+            actionControls = `<button class="btn-action btn-sold">AGOTADO</button>`;
         } else {
-            actionButton = `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al Pedido</button>`;
+            actionControls = `
+                <div class="quantity-selector">
+                    <span style="font-size:0.9rem; color:var(--text-dim);">Cantidad:</span>
+                    <button class="quantity-btn" onclick="changeModalQty(-1, ${c.stock})">-</button>
+                    <span class="quantity-value" id="modal-qty-val">1</span>
+                    <button class="quantity-btn" onclick="changeModalQty(1, ${c.stock})">+</button>
+                </div>
+                <button class="btn-action btn-add" onclick="processAddToCart(${c.id})">Añadir al Pedido</button>
+            `;
         }
 
         let finalPriceDisplay = c.displayPrice ? c.displayPrice : '$' + c.price + ' MXN';
@@ -679,10 +731,10 @@
                     <div class="card-set">${c.set}</div>
                     <h2>${c.name}</h2>
                     <div class="modal-price-big">${c.sold ? 'AGOTADO' : finalPriceDisplay}</div>
-                    <div style="color:var(--text-dim)">Disponibles: ${c.stock}</div>
+                    <div style="color:var(--text-dim)">Disponibles en Stock: ${c.stock}</div>
                 </div>
             </div>
-            ${actionButton}
+            ${actionControls}
         `;
         modal.style.display = "flex";
     }
@@ -691,31 +743,31 @@
         document.getElementById('cardModal').style.display = "none";
     }
 
-    function addToCart(id) {
+    function processAddToCart(id) {
         const card = cards.find(c => c.id === id);
         const cartItem = cart.find(item => item.id === id);
         
-        if (cartItem) {
-            if (cartItem.quantity < card.stock) {
-                cartItem.quantity++;
-            } else {
-                alert("No hay más stock disponible de este artículo.");
-                return;
-            }
-        } else {
-            cart.push({ 
-                id: card.id, 
-                name: card.name, 
-                price: card.price, 
-                quantity: 1, 
-                isSleeve: card.isSleeve || false, 
-                isToploader: card.isToploader || false 
-            });
-        }
+        let currentCartQty = cartItem ? cartItem.quantity : 0;
         
-        localStorage.setItem('pkmCart', JSON.stringify(cart));
-        updateCartUI();
-        closeModal();
+        if (currentCartQty + currentModalQty <= card.stock) {
+            if (cartItem) {
+                cartItem.quantity += currentModalQty;
+            } else {
+                cart.push({ 
+                    id: card.id, 
+                    name: card.name, 
+                    price: card.price, 
+                    quantity: currentModalQty, 
+                    isSleeve: card.isSleeve || false, 
+                    isToploader: card.isToploader || false 
+                });
+            }
+            localStorage.setItem('pkmCart', JSON.stringify(cart));
+            updateCartUI();
+            closeModal();
+        } else {
+            alert(`No puedes agregar esa cantidad. Stock máximo: ${card.stock}. Ya tienes ${currentCartQty} en tu carrito.`);
+        }
     }
 
     function removeFromCart(id) {
@@ -730,31 +782,29 @@
         let totalToploadersCount = 0;
         let details = [];
 
-        // 1. Contar toploaders totales (azules + transparentes agrupados)
+        // Contar toploaders totales (combinando ambos artículos)
         cart.forEach(item => {
             if (item.isToploader) {
                 totalToploadersCount += item.quantity;
             }
         });
 
-        // Calcular promociones de Toploaders: 2x$15, los que sobren a $10 c/u
+        // Lógica de promociones para Toploaders (2x$15, sobrantes a $10)
         let toploaderPairs = Math.floor(totalToploadersCount / 2);
         let toploaderSingles = totalToploadersCount % 2;
         let totalToploaderPrice = (toploaderPairs * 15) + (toploaderSingles * 10);
 
-        // Procesar todos los productos para el desglose e importes finales
         cart.forEach(item => {
             let itemSubtotal = 0;
 
             if (item.isSleeve) {
-                // Promoción de Sleeves: 3x$10
+                // Nueva promoción estructurada para micas: Grupos de 3 a $10, individuales a $5
                 let groupsOfThree = Math.floor(item.quantity / 3);
                 let remainingSleeves = item.quantity % 3;
-                itemSubtotal = (groupsOfThree * 10) + (remainingSleeves * 3.3333);
-                itemSubtotal = Math.round(itemSubtotal); // Redondear a entero
+                itemSubtotal = (groupsOfThree * 10) + (remainingSleeves * 5);
                 total += itemSubtotal;
             } else if (item.isToploader) {
-                // El subtotal de los toploaders se pondera proporcionalmente según el total calculado arriba
+                // Desglose visual proporcional equilibrado en base a los toploaders totales
                 let proportion = item.quantity / totalToploadersCount;
                 itemSubtotal = Math.round(totalToploaderPrice * proportion);
             } else {
@@ -769,7 +819,6 @@
             });
         });
 
-        // Sumar el precio final de los toploaders al total global
         if (totalToploadersCount > 0) {
             total += totalToploaderPrice;
         }
@@ -801,15 +850,15 @@
         
         calculation.details.forEach(item => {
             let descPrice = '';
-            if (item.isSleeve) descPrice = 'Promo 3x$10';
+            if (item.isSleeve) descPrice = 'Promo: 3x$10 (Indiv: $5)';
             else if (item.isToploader) descPrice = 'Promo mixta 2x$15';
-            else descPrice = `$${item.price} MXN`;
+            else descPrice = `$${item.price} MXN c/u`;
 
             itemsHtml += `
                 <div class="cart-item">
                     <div>
                         <strong>${item.name}</strong><br>
-                        <span style="color:var(--text-dim)">${descPrice} (Cant: ${item.quantity})</span>
+                        <span style="color:var(--text-dim)">${descPrice} (Llevas: ${item.quantity})</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
                         <span style="font-weight:700">$${item.calculatedSubtotal} MXN</span>
@@ -819,7 +868,6 @@
             `;
         });
 
-        // Nota informativa si aplica la promo cruzada de toploaders
         if (calculation.totalToploadersCount > 1) {
             itemsHtml += `
                 <div style="font-size:0.75rem; color:var(--warning-yellow); margin-top:5px; padding: 5px; background: rgba(245,158,11,0.1); border-radius:4px;">
