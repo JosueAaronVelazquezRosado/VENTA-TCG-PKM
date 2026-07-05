@@ -201,18 +201,22 @@
             overflow: hidden;
             aspect-ratio: 3/4;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             color: var(--text-dim);
             font-size: 0.8rem;
+            text-align: center;
+            padding: 5px;
         }
 
         .img-container img { width: 100%; height: auto; }
+        .img-container .accessory-icon { font-size: 3.5rem; margin-bottom: 5px; }
 
         .card-meta { padding: 8px 4px; }
         .card-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-set { font-size: 0.7rem; color: var(--text-dim); margin-bottom: 4px; }
-        
+         
         .card-footer {
             display: flex;
             justify-content: space-between;
@@ -222,7 +226,7 @@
 
         .card-price { color: var(--price-green); font-weight: 700; font-size: 0.9rem; }
         .card-stock-badge { font-size: 0.65rem; color: var(--text-dim); background: #333; padding: 2px 6px; border-radius: 4px; }
-    
+     
         #cart-float {
             position: fixed;
             bottom: 25px; right: 25px;
@@ -267,10 +271,11 @@
 
         .modal-header { display: flex; gap: 20px; border-bottom: 1px solid #2d3142; padding-bottom: 20px; }
         .modal-img { width: 130px; border-radius: 8px; object-fit: contain; }
-        
+        .modal-img-fallback { width: 130px; height: 150px; background: #000; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+         
         .modal-info h2 { margin: 0; font-size: 1.2rem; }
         .modal-price-big { font-size: 1.8rem; color: var(--price-green); font-weight: 800; margin: 10px 0; }
-        
+         
         .btn-action {
             display: block; width: 100%; padding: 16px;
             border-radius: 14px; font-weight: 700;
@@ -285,7 +290,7 @@
         .btn-sold { background: #333; color: #666; cursor: not-allowed; pointer-events: none; }
 
         .close-area { text-align: center; padding-bottom: 15px; color: var(--text-dim); cursor: pointer; }
-        
+         
         .cart-item {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #2d3142; padding: 12px 0;
@@ -371,7 +376,7 @@
     </div>
     <div class="nav-controls">
         <div class="search-container">
-            <input type="search" class="search-input" id="searchInput" placeholder="Buscar Pokémon..." oninput="handleSort()" onsearch="handleSort()">
+            <input type="search" class="search-input" id="searchInput" placeholder="Buscar..." oninput="handleSort()" onsearch="handleSort()">
         </div>
         <select class="filter-container" id="statusFilter" onchange="handleSort()">
             <option value="all">Todos los estados</option>
@@ -388,11 +393,12 @@
 
 <div class="set-buttons-container" id="setButtonsGrid">
     <button class="set-btn active" onclick="filterBySet('all', this)">✨ Todas</button>
+    <button class="set-btn" onclick="filterBySet('Accesorios', this)">🎒 Accesorios</button>
     <button class="set-btn" onclick="filterBySet('Surging Sparks', this)">⚡ Surging Sparks</button>
     <button class="set-btn" onclick="filterBySet('Prismatic Evolution', this)">💎 Prismatic</button>
     <button class="set-btn" onclick="filterBySet('Ascended Heroes', this)">🏆 Ascended Heroes</button>
     <button class="set-btn" onclick="filterBySet('Destined Rivals', this)">⚔️ Destined Rivals</button>
-    <button class="set-btn" onclick="filterBySet('Phantasmal Flames', this)">🔥 Phantasmal</button>
+    <button class="set-btn" onclick="filterBySet('Phantasmal Flames', this), this">🔥 Phantasmal</button>
     <button class="set-btn" onclick="filterBySet('Journey Together', this)">🎒 Journey Together</button>
     <button class="set-btn" onclick="filterBySet('Mega Evolution', this)">🧬 Mega Evolution</button>
     <button class="set-btn" onclick="filterBySet('SV: 151', this)">🗺️ SV: 151</button>
@@ -405,24 +411,25 @@
         <div class="footer-section">
             <h3>📍 Ubicación y Horarios</h3>
             <p><strong>Tianguis de la 100 (Cancún, Q. Roo)</strong></p>
-            <p>🗓️ Sábados y Domingos</p>
+            <p>🗓️ Domingos</p>
             <p>⏰ 7:00 AM - 2:00 PM</p>
-            <p>⛺ <em>Encuéntranos en el pasillo principal frente a la zona de comida.</em></p>
+            <p>⛺ <em>Encuéntranos sobre la calle 133 y calle 18, a un costado de la secundaria tecnica 18.</em></p>
         </div>
 
         <div class="footer-section">
             <h3>💳 Pagos y Confianza</h3>
             <p>💵 Efectivo</p>
-            <p>📱 Transferencia SPEI (BBVA / Banamex / etc.)</p>
+            <p>📱 Transferencia SPEI (BBVA / Mercado Pago)</p>
             <p>🛡️ <strong>Garantía:</strong> Todas nuestras piezas son 100% auténticas y protegidas en micas (sleeves) desde el primer momento.</p>
         </div>
 
         <div class="footer-section">
             <h3>📱 Contacto y Redes</h3>
-            <p>¿Buscas alguna carta en específico o quieres vender/cambiar tus códigos o colecciones? ¡Escríbenos!</p>
+            <p>¿Buscas alguna carta en específico o colecciones? ¡Escríbenos!</p>
             <div class="footer-socials">
                 <a href="https://wa.me/9987683264" target="_blank" class="social-btn" style="background:#25d366;">WhatsApp</a>
-                <a href="https://www.facebook.com/tu-pagina" target="_blank" class="social-btn" style="background:#1877f2;">Facebook</a>
+                <a href="https://www.facebook.com/share/1EKpoxa4iU/" target="_blank" class="social-btn" style="background:#1877f2;">Facebook</a>
+                <a href="PROXIMAMENTE!!" target="_blank" class="social-btn" style="background:#000000;">TikTok</a>
             </div>
         </div>
     </div>
@@ -448,8 +455,13 @@
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
     let selectedSet = "all";
 
-    // BASE DE DATOS REBUELTA COMPLETAMENTE CORREGIDA Y SIN DUPLICADOS (IDs REPARADOS)
     const cards = [
+  // --- SECCIÓN NUEVA: ACCESORIOS ---
+  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 3.33, stock: 100, sold: false, img: "", isSleeve: true, displayPrice: "3x$10" },
+  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 50, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
+  { id: 903, name: "Toploader Azul", set: "Accesorios", price: 10, stock: 40, sold: false, img: "", isToploader: true, displayPrice: "$10 (2x$15)" },
+
+  // --- CARTAS ---
   { id: 60, name: "Tyranitar ex #064/131", set: "Prismatic Evolution", price: 30, stock: 3, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610419.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 14, name: "Rotom ex #029/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662220.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 116, name: "Iono's Kilowattrel #163/159", set: "Journey Together", price: 150, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_623590.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -470,7 +482,7 @@
   { id: 3, name: "Dondozo ex #066/182", set: "Destined Rivals", price: 10, stock: 2, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_632879.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 65, name: "Mega Manectric ex #050/132", set: "Mega Evolution", price: 30, stock: 9, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_654389.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 44, name: "Hydrapple ex #014/142", set: "Stellar Crown", price: 30, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_567240.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
-  { id: 78, name: "Jynx ex #124/165", set: "SV: 151", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_516687.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
+  { id: 78, name: "Jynx ex #124/165", set: "SV: 151", price: 40, stock: 1, sold: false, img: "https://public.getcollectr.com/with=1200&quality=80&strip=metadata" },
   { id: 10, name: "Sandy Shocks ex #056/131", set: "Prismatic Evolution", price: 10, stock: 5, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_610411.jpg?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 96, name: "Koraidon ex (JP) #114/190", set: "Shiny Treasure ex", price: 50, stock: 1, sold: false, img: "https://public.getcollectr.com/public-assets/products/product_10012780.png?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
   { id: 15, name: "Mismagius ex #036/094", set: "Phantasmal Flames", price: 10, stock: 0, sold: true, img: "https://public.getcollectr.com/public-assets/products/product_662199.webp?optimizer=image&format=webp&width=1200&quality=80&strip=metadata" },
@@ -565,12 +577,20 @@
             const div = document.createElement('div');
             div.className = `collectr-card ${c.sold ? 'sold' : ''}`;
             
-            const imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
+            let imageHtml = '';
+            if (c.set === "Accesorios") {
+                let icon = c.isSleeve ? "🃏" : "🛡️";
+                imageHtml = `<div class="accessory-icon">${icon}</div><span>${c.name}</span>`;
+            } else {
+                imageHtml = c.img ? `<img src="${c.img}" alt="${c.name}">` : `<span>Sin Imagen</span>`;
+            }
             
             let lowStockHtml = '';
-            if (!c.sold && (c.stock === 1 || c.stock === 2)) {
+            if (!c.sold && (c.stock === 1 || c.stock === 2) && c.set !== "Accesorios") {
                 lowStockHtml = `<div class="low-stock-badge">⏳ ¡Últimas!</div>`;
             }
+
+            let finalPriceDisplay = c.displayPrice ? c.displayPrice : '$' + c.price + ' MXN';
 
             div.innerHTML = `
                 ${c.sold ? '<div class="sold-badge">Vendido</div>' : lowStockHtml}
@@ -580,7 +600,7 @@
                     <div class="card-name">${c.name}</div>
                     <div class="nav-brand-container" style="display:none;">${c.id}</div>
                     <div class="card-footer">
-                        <div class="card-price">${c.sold ? '---' : '$' + c.price + ' MXN'}</div>
+                        <div class="card-price">${c.sold ? '---' : finalPriceDisplay}</div>
                         <div class="card-stock-badge">x${c.stock}</div>
                     </div>
                 </div>
@@ -608,24 +628,20 @@
         
         let filteredCards = [...cards];
 
-        // 1. Filtrar por Expansión Activa (Botonera)
         if (selectedSet !== "all") {
             filteredCards = filteredCards.filter(c => c.set === selectedSet);
         }
 
-        // 2. Filtrar por Buscador de texto
         if (searchQuery !== "") {
             filteredCards = filteredCards.filter(c => c.name.toLowerCase().includes(searchQuery));
         }
 
-        // 3. Filtrar por Estado (Disponibles / Vendidos)
         if (statusValue === "available") {
             filteredCards = filteredCards.filter(c => !c.sold);
         } else if (statusValue === "sold") {
             filteredCards = filteredCards.filter(c => c.sold);
         }
 
-        // 4. Ejecutar ordenamientos específicos del select de precio
         if (filterValue === "price-asc") {
             filteredCards.sort((a, b) => a.price - b.price);
         } else if (filterValue === "price-desc") {
@@ -639,7 +655,13 @@
         const body = document.getElementById('modalBody');
         const modal = document.getElementById('cardModal');
         
-        const imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
+        let imageHtml = '';
+        if (c.set === "Accesorios") {
+            let icon = c.isSleeve ? "🃏" : "🛡️";
+            imageHtml = `<div class="modal-img-fallback">${icon}</div>`;
+        } else {
+            imageHtml = c.img ? `<img src="${c.img}" class="modal-img" style="${c.sold ? 'filter: grayscale(1)' : ''}">` : `<div class="modal-img" style="background:#000; height:150px; display:flex; align-items:center; justify-content:center;">Sin Imagen</div>`;
+        }
         
         let actionButton = '';
         if (c.sold) {
@@ -648,13 +670,15 @@
             actionButton = `<button class="btn-action btn-add" onclick="addToCart(${c.id})">Añadir al Pedido</button>`;
         }
 
+        let finalPriceDisplay = c.displayPrice ? c.displayPrice : '$' + c.price + ' MXN';
+
         body.innerHTML = `
             <div class="modal-header">
                 ${imageHtml}
                 <div class="modal-info">
                     <div class="card-set">${c.set}</div>
                     <h2>${c.name}</h2>
-                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : '$' + c.price + ' MXN'}</div>
+                    <div class="modal-price-big">${c.sold ? 'AGOTADO' : finalPriceDisplay}</div>
                     <div style="color:var(--text-dim)">Disponibles: ${c.stock}</div>
                 </div>
             </div>
@@ -675,11 +699,18 @@
             if (cartItem.quantity < card.stock) {
                 cartItem.quantity++;
             } else {
-                alert("No hay más stock disponible de esta carta.");
+                alert("No hay más stock disponible de este artículo.");
                 return;
             }
         } else {
-            cart.push({ id: card.id, name: card.name, price: card.price, quantity: 1 });
+            cart.push({ 
+                id: card.id, 
+                name: card.name, 
+                price: card.price, 
+                quantity: 1, 
+                isSleeve: card.isSleeve || false, 
+                isToploader: card.isToploader || false 
+            });
         }
         
         localStorage.setItem('pkmCart', JSON.stringify(cart));
@@ -692,6 +723,58 @@
         localStorage.setItem('pkmCart', JSON.stringify(cart));
         openCartView();
         updateCartUI();
+    }
+
+    function calculateCartTotal() {
+        let total = 0;
+        let totalToploadersCount = 0;
+        let details = [];
+
+        // 1. Contar toploaders totales (azules + transparentes agrupados)
+        cart.forEach(item => {
+            if (item.isToploader) {
+                totalToploadersCount += item.quantity;
+            }
+        });
+
+        // Calcular promociones de Toploaders: 2x$15, los que sobren a $10 c/u
+        let toploaderPairs = Math.floor(totalToploadersCount / 2);
+        let toploaderSingles = totalToploadersCount % 2;
+        let totalToploaderPrice = (toploaderPairs * 15) + (toploaderSingles * 10);
+
+        // Procesar todos los productos para el desglose e importes finales
+        cart.forEach(item => {
+            let itemSubtotal = 0;
+
+            if (item.isSleeve) {
+                // Promoción de Sleeves: 3x$10
+                let groupsOfThree = Math.floor(item.quantity / 3);
+                let remainingSleeves = item.quantity % 3;
+                itemSubtotal = (groupsOfThree * 10) + (remainingSleeves * 3.3333);
+                itemSubtotal = Math.round(itemSubtotal); // Redondear a entero
+                total += itemSubtotal;
+            } else if (item.isToploader) {
+                // El subtotal de los toploaders se pondera proporcionalmente según el total calculado arriba
+                let proportion = item.quantity / totalToploadersCount;
+                itemSubtotal = Math.round(totalToploaderPrice * proportion);
+            } else {
+                // Cartas normales
+                itemSubtotal = item.price * item.quantity;
+                total += itemSubtotal;
+            }
+
+            details.push({
+                ...item,
+                calculatedSubtotal: itemSubtotal
+            });
+        });
+
+        // Sumar el precio final de los toploaders al total global
+        if (totalToploadersCount > 0) {
+            total += totalToploaderPrice;
+        }
+
+        return { total, details, totalToploadersCount, toploaderPairs, toploaderSingles };
     }
 
     function updateCartUI() {
@@ -713,31 +796,43 @@
             return;
         }
 
+        const calculation = calculateCartTotal();
         let itemsHtml = '';
-        let total = 0;
         
-        cart.forEach(item => {
-            const subtotal = item.price * item.quantity;
-            total += subtotal;
+        calculation.details.forEach(item => {
+            let descPrice = '';
+            if (item.isSleeve) descPrice = 'Promo 3x$10';
+            else if (item.isToploader) descPrice = 'Promo mixta 2x$15';
+            else descPrice = `$${item.price} MXN`;
+
             itemsHtml += `
                 <div class="cart-item">
                     <div>
                         <strong>${item.name}</strong><br>
-                        <span style="color:var(--text-dim)">$${item.price} MXN x ${item.quantity}</span>
+                        <span style="color:var(--text-dim)">${descPrice} (Cant: ${item.quantity})</span>
                     </div>
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <span style="font-weight:700">$${subtotal} MXN</span>
+                        <span style="font-weight:700">$${item.calculatedSubtotal} MXN</span>
                         <button class="remove-item" onclick="removeFromCart(${item.id})">🗑️</button>
                     </div>
                 </div>
             `;
         });
 
-        let message = "¡Hola! Me interesan las siguientes cartas:\n\n";
-        cart.forEach(item => {
-            message += `- ${item.name} (x${item.quantity}) - $${item.price * item.quantity} MXN\n`;
+        // Nota informativa si aplica la promo cruzada de toploaders
+        if (calculation.totalToploadersCount > 1) {
+            itemsHtml += `
+                <div style="font-size:0.75rem; color:var(--warning-yellow); margin-top:5px; padding: 5px; background: rgba(245,158,11,0.1); border-radius:4px;">
+                    🛈 Se aplicó promo 2x$15 combinando tus Toploaders (${calculation.toploaderPairs} promo(s) + ${calculation.toploaderSingles} ind.).
+                </div>
+            `;
+        }
+
+        let message = "¡Hola! Me interesan los siguientes artículos:\n\n";
+        calculation.details.forEach(item => {
+            message += `- ${item.name} (x${item.quantity}) - $${item.calculatedSubtotal} MXN\n`;
         });
-        message += `\nTotal: $${total} MXN`;
+        message += `\nTotal estimado: $${calculation.total} MXN`;
         const encodedMessage = encodeURIComponent(message);
 
         body.innerHTML = `
@@ -747,7 +842,7 @@
             </div>
             <div style="display:flex; justify-content:space-between; font-size:1.2rem; font-weight:800; margin:15px 0;">
                 <span>Total:</span>
-                <span style="color:var(--price-green)">$${total} MXN</span>
+                <span style="color:var(--price-green)">$${calculation.total} MXN</span>
             </div>
             <a class="btn-action btn-whatsapp" href="https://wa.me/${whatsappNumber}?text=${encodedMessage}" target="_blank">
                 Enviar pedido por WhatsApp
