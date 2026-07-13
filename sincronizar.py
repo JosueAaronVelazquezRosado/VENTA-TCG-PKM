@@ -1,48 +1,22 @@
-import os
+import json
 import re
-import requests
 
-SESSION_TOKEN = os.environ.get("COLLECTR_PASS")
+print("📦 VERSIÓN NUEVA: Leyendo datos locales desde cartas.json...")
 
-if not SESSION_TOKEN:
-    print("❌ Error: No se encontró la cookie en los secretos de GitHub.")
+try:
+    with open("cartas.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
+except Exception as e:
+    print(f"❌ Error al leer cartas.json: {e}")
     exit(1)
 
-print("🌐 Conectando a Collectr mediante la ruta interna de datos...")
-
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "application/json",
-    "Cookie": f"collectrToken={SESSION_TOKEN}"
-}
-
-# 🛠️ NUEVA RUTA: Apunta al endpoint de datos internos que carga tu portafolio
-api_url = "https://app.getcollectr.com/showcase/profile/@josaar20"
-
-response = requests.get(api_url, headers=headers)
-
-# Si esa ruta corta tampoco responde, probamos con la ruta de la colección principal
-if response.status_code == 404:
-    print("🔄 Intentando ruta alternativa de colección...")
-    api_url = "https://app.getcollectr.com/api/collection"
-    response = requests.get(api_url, headers=headers)
-
-if response.status_code != 200:
-    print(f"❌ Error al consultar tus datos. Código: {response.status_code}")
-    print("Si da 401 o 403, tu cookie collectrToken copiada expiró o está incompleta.")
-    exit(1)
-
-data = response.json()
-
-# Buscamos la lista de cartas dentro de la respuesta
-# Dependiendo del formato, puede venir directo o dentro de 'portfolio' / 'collection'
-items = data.get("items", data.get("portfolio", {}).get("items", data.get("collection", {}).get("items", [])))
-
-print(f"🃏 ¡Conexión exitosa! Se encontraron {len(items)} cartas en tu cuenta.")
+# En Collectr a veces los datos vienen en una lista directa o dentro de un objeto
+items = data if isinstance(data, list) else data.get("items", [])
+print(f"🃏 ¡Datos leídos con éxito! Se encontraron {len(items)} cartas guardadas.")
 
 nuevas_cartas = []
 
-# Mantener tus accesorios fijos intactos
+# Tus accesorios fijos
 nuevas_cartas.append('  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 5, stock: 90, sold: false, img: "images.jpg", isSleeve: true, displayPrice: "$5 c/u o 3x$10" }')
 nuevas_cartas.append('  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 98, sold: false, img: "toploader_transparente,jpg.jpg", isToploader: true, displayPrice: "$10 (2x$15)" }')
 
@@ -79,4 +53,4 @@ nuevo_html = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(nuevo_html)
 
-print("🚀 ¡Completado con éxito!")
+print("🚀 ¡Completado con éxito! Tu index.html se ha actualizado usando los datos guardados.")
