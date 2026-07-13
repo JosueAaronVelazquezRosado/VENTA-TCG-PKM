@@ -8,19 +8,24 @@ if not SESSION_TOKEN:
     print("❌ Error: No se encontró la cookie en los secretos de GitHub.")
     exit(1)
 
-print("🌐 Conectando a Collectr mediante el dominio correcto de la App...")
+print("🌐 Conectando a Collectr mediante la ruta interna de datos...")
 
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "application/json, text/plain, */*",
-    "Accept-Language": "es-ES,es;q=0.9",
+    "Accept": "application/json",
     "Cookie": f"collectrToken={SESSION_TOKEN}"
 }
 
-# 🛠️ CAMBIADO: Ahora apunta a la ruta real dentro de app.getcollectr.com
-api_url = "https://app.getcollectr.com/api/v1/user/portfolio"
+# 🛠️ NUEVA RUTA: Apunta al endpoint de datos internos que carga tu portafolio
+api_url = "https://app.getcollectr.com/api/portfolio"
 
 response = requests.get(api_url, headers=headers)
+
+# Si esa ruta corta tampoco responde, probamos con la ruta de la colección principal
+if response.status_code == 404:
+    print("🔄 Intentando ruta alternativa de colección...")
+    api_url = "https://app.getcollectr.com/api/collection"
+    response = requests.get(api_url, headers=headers)
 
 if response.status_code != 200:
     print(f"❌ Error al consultar tus datos. Código: {response.status_code}")
@@ -28,7 +33,10 @@ if response.status_code != 200:
     exit(1)
 
 data = response.json()
-items = data.get("items", [])
+
+# Buscamos la lista de cartas dentro de la respuesta
+# Dependiendo del formato, puede venir directo o dentro de 'portfolio' / 'collection'
+items = data.get("items", data.get("portfolio", {}).get("items", data.get("collection", {}).get("items", [])))
 
 print(f"🃏 ¡Conexión exitosa! Se encontraron {len(items)} cartas en tu cuenta.")
 
@@ -40,7 +48,7 @@ nuevas_cartas.append('  { id: 902, name: "Toploader Transparente", set: "Accesor
 
 for index, item in enumerate(items):
     card_id = index + 1
-    product = item.get("product", {})
+    product = item.get("product", item)
     name = product.get("name", "Carta Pokémon").replace('"', '\\"')
     set_name = product.get("setName", "Expansión")
     
