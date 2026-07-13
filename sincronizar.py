@@ -17,7 +17,7 @@ headers = {
 }
 
 # 🛠️ NUEVA RUTA: Apunta al endpoint de datos internos que carga tu portafolio
-api_url = "https://app.getcollectr.com/api/portfolio"
+api_url = "https://app.getcollectr.com/showcase/profile/@josaar20"
 
 response = requests.get(api_url, headers=headers)
 
