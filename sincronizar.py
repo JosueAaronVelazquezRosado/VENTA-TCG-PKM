@@ -8,30 +8,33 @@ if not SESSION_TOKEN:
     print("❌ Error: No se encontró la cookie en los secretos de GitHub.")
     exit(1)
 
-print("🌐 Conectando a Collectr mediante token de sesión...")
+print("🌐 Conectando a Collectr mediante el dominio correcto de la App...")
 
 headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "es-ES,es;q=0.9",
     "Cookie": f"collectrToken={SESSION_TOKEN}"
 }
 
-api_url = "https://api.getcollectr.com/api/v1/user/portfolio"
+# 🛠️ CAMBIADO: Ahora apunta a la ruta real dentro de app.getcollectr.com
+api_url = "https://app.getcollectr.com/api/v1/user/portfolio"
 
 response = requests.get(api_url, headers=headers)
 
 if response.status_code != 200:
     print(f"❌ Error al consultar tus datos. Código: {response.status_code}")
-    print("Es probable que tu sesión haya expirado. Intenta copiar una nueva cookie de tu navegador.")
+    print("Si da 401 o 403, tu cookie collectrToken copiada expiró o está incompleta.")
     exit(1)
 
 data = response.json()
 items = data.get("items", [])
 
-print(f"🃏 ¡Conexión exitosa con Gmail! Se encontraron {len(items)} cartas en tu cuenta.")
+print(f"🃏 ¡Conexión exitosa! Se encontraron {len(items)} cartas en tu cuenta.")
 
 nuevas_cartas = []
 
+# Mantener tus accesorios fijos intactos
 nuevas_cartas.append('  { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 5, stock: 90, sold: false, img: "images.jpg", isSleeve: true, displayPrice: "$5 c/u o 3x$10" }')
 nuevas_cartas.append('  { id: 902, name: "Toploader Transparente", set: "Accesorios", price: 10, stock: 98, sold: false, img: "toploader_transparente,jpg.jpg", isToploader: true, displayPrice: "$10 (2x$15)" }')
 
@@ -68,4 +71,4 @@ nuevo_html = re.sub(pattern, replacement, html_content, flags=re.DOTALL)
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(nuevo_html)
 
-print("🚀 ¡Completado con éxito! Tu tienda del Tianguis ya está sincronizada con tus cartas de Gmail.")
+print("🚀 ¡Completado con éxito!")
