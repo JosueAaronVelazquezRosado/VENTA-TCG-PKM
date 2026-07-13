@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import json
 
 # 🫵 REEMPLAZA ESTA URL POR TU ENLACE PÚBLICO DE COLLECTR:
-URL_PUBLICAS_COLLECTR = "https://app.getcollectr.com/portfolio/products"
+URL_PUBLICAS_COLLECTR = "https://app.getcollectr.com/showcase/profile/@josaar20"
 
 print("🌐 Conectando con tu portafolio público de Collectr...")
 
