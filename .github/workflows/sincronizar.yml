@@ -1,0 +1,34 @@
+name: Actualizar Inventario Collectr
+
+on:
+  schedule:
+    - cron: '0 4 * * *' # Se ejecuta de forma automática todas las noches a las 4:00 AM
+  workflow_dispatch: # Te permite darle a un botón en GitHub para actualizarlo cuando tú quieras
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clonar repositorio
+      uses: actions/checkout@v3
+
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Instalar librerías
+      run: pip install requests
+
+    - name: Ejecutar script de actualización
+      env:
+        COLLECTR_USER: ${{ secrets.COLLECTR_USER }}
+        COLLECTR_PASS: ${{ secrets.COLLECTR_PASS }}
+      run: python sincronizar.py
+
+    - name: Guardar cambios en GitHub
+      run: |
+        git config --global user.name 'Collectr Bot'
+        git config --global user.email 'bot@github.com'
+        git add index.html
+        git diff --quiet && git diff --staged --quiet || (git commit -m "🤖 Inventario actualizado automáticamente desde Collectr" && git push)
