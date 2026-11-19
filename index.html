@@ -107,11 +107,37 @@
         /* --- BOTONERA DE EXPANSIONES --- */
         .set-buttons-container {
             max-width: 1000px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto;
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
             padding-bottom: 8px;
+            /* Nuevas propiedades para colapsar */
+            max-height: 1000px; /* Altura máxima cuando está abierto */
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+        }
+
+        .set-buttons-container.collapsed {
+            max-height: 38px; /* Altura de una sola fila de botones */
+        }
+
+        .toggle-filters-btn {
+            display: block;
+            margin: 5px auto 25px auto;
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 5px 15px;
+            transition: color 0.2s;
+        }
+
+        .toggle-filters-btn:hover {
+            color: #60a5fa; /* Un azul más claro al pasar el mouse */
+            text-decoration: underline;
         }
 
         .set-btn {
@@ -428,6 +454,13 @@
 </nav>
 
 <div class="set-buttons-container" id="setButtonsGrid">
+    <div class="set-buttons-container collapsed" id="setButtonsGrid">
+    <button class="set-btn active" onclick="filterBySet('all', this)">✨ Todas</button>
+    <button class="set-btn" onclick="filterBySet('Accesorios', this)">🎒 Accesorios</button>
+    <!-- ... AQUÍ VAN TODOS TUS DEMÁS BOTONES ... -->
+    <button class="set-btn" onclick="filterBySet('Wild Force', this)">🐾 Wild Force</button>
+</div>
+<button class="toggle-filters-btn" id="toggleFiltersBtn" onclick="toggleFilters()">Ver más expansiones ▼</button>
     <button class="set-btn active" onclick="filterBySet('all', this)">✨ Todas</button>
     <button class="set-btn" onclick="filterBySet('Accesorios', this)">🎒 Accesorios</button>
     <button class="set-btn" onclick="filterBySet('30th Celebration', this)">🎉 30th Celebration</button>
@@ -518,7 +551,19 @@
     let cart = JSON.parse(localStorage.getItem('pkmCart')) || [];
     let selectedSet = "all";
     let currentModalQty = 1;
-
+    
+function toggleFilters() {
+        const grid = document.getElementById('setButtonsGrid');
+        const btn = document.getElementById('toggleFiltersBtn');
+        
+        if (grid.classList.contains('collapsed')) {
+            grid.classList.remove('collapsed');
+            btn.innerText = 'Ver menos expansiones ▲';
+        } else {
+            grid.classList.add('collapsed');
+            btn.innerText = 'Ver más expansiones ▼';
+        }
+    }
     const cards = [
   // --- ACCESORIOS ---
   { id: 901, name: "Sleeves (Micas Protectoras)", set: "Accesorios", price: 2, stock: 90, sold: false, img: "images.jpg", isSleeve: true, displayPrice: "$5 c/u o 3x$10" },
